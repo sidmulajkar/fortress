@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fortress Zero — Playground</title>
+  <style>
+    :root {
+      --bg: #050508;
+      --surface: #101014;
+      --elevated: #1a1a22;
+      --border: #1f1f2d;
+      --text: #e8e8ef;
+      --text-muted: #7a7a8d;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-bg: rgba(239,68,68,0.08);
+      --success: #22c55e;
+      --success-bg: rgba(34,197,94,0.08);
+      --radius: 12px;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo span { color: var(--accent); }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-left: 1.5rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* HERO SECTION */
+    .hero {
+      text-align: center;
+      padding: 2rem 0 2.5rem;
+      position: relative;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      color: var(--accent);
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      max-width: 700px;
+      margin: 0 auto 0.75rem;
+      position: relative;
+      z-index: 1;
+    }
+    h1 span { color: var(--accent); }
+    .tagline {
+      font-size: 1rem;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* FORMAT TABS */
+    .format-section {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .format-tabs {
+      display: inline-flex;
+      gap: 0.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.3rem;
+    }
+    .format-tab {
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .format-tab:hover { color: var(--text); }
+    .format-tab.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* PLAYGROUND GRID */
+    .playground {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 800px) {
+      .playground { grid-template-columns: 1fr; }
+    }
+
+    /* PANE / TERMINAL CARD */
+    .pane-card {
+      background: #0a0a0e;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .pane-header {
+      background: var(--surface);
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pane-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .term-dots {
+      display: flex;
+      gap: 0.35rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+
+    .pane-title {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    .pane-badges {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .pane-badge {
+      background: rgba(59,130,246,0.15);
+      color: var(--accent);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .pane-badge.red {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .copy-btn {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .copy-btn:hover {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+    .copy-btn.copied {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      min-height: 280px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      padding: 1rem 1.25rem;
+      resize: vertical;
+    }
+    textarea:focus { outline: none; }
+    textarea::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+    .output-content {
+      flex: 1;
+      min-height: 280px;
+      padding: 1rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-y: auto;
+      color: var(--text-muted);
+    }
+
+    /* Diff Highlighting */
+    .diff-removed {
+      color: var(--danger);
+      background: var(--danger-bg);
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-decoration: line-through;
+    }
+    .diff-added {
+      color: var(--success);
+      background: var(--success-bg);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* CONTROLS */
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 20px rgba(59,130,246,0.2);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+    }
+
+    /* SAMPLE BUTTONS */
+    .sample-section {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .sample-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .sample-btn:hover {
+      background: var(--elevated);
+      color: var(--text);
+      border-color: var(--text-muted);
+    }
+
+    /* ENTITIES BAR */
+    .entities-bar {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .entity-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .entity-tag.active {
+      border-color: var(--success);
+      color: var(--success);
+      background: var(--success-bg);
+    }
+
+    /* LEGEND */
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+    .legend span { display: flex; align-items: center; gap: 0.4rem; }
+    .legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .legend .dot.red { background: var(--danger); }
+    .legend .dot.green { background: var(--success); }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="container">
+  <nav>
+    <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">🛡️ FORTRESS <span>ZERO</span></a>
+    <div class="nav-links">
+      <a href="index.html">← Back to Landing</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="badge">Phase 0 — Live Demo</div>
+    <h1>Sanitize PII before it <span>leaves your machine</span></h1>
+    <p class="tagline">Strip Aadhaar, PAN, emails, API keys. Keep structure. Paste safely.</p>
+  </section>
+
+  <div class="format-section">
+    <div class="format-tabs">
+      <button class="format-tab active" data-format="auto" onclick="setFormat('auto')">Auto</button>
+      <button class="format-tab" data-format="json" onclick="setFormat('json')">JSON</button>
+      <button class="format-tab" data-format="csv" onclick="setFormat('csv')">CSV</button>
+      <button class="format-tab" data-format="sql" onclick="setFormat('sql')">SQL</button>
+      <button class="format-tab" data-format="log" onclick="setFormat('log')">Log</button>
+      <button class="format-tab" data-format="prose" onclick="setFormat('prose')">Text</button>
+    </div>
+  </div>
+
+  <div class="playground">
+    <div class="pane-card">
+      <div class="pane-header">
+        <div class="pane-header-left">
+          <div class="term-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+          <span class="pane-title">INPUT</span>
+        </div>
+        <div class="pane-badges">
+          <span class="pane-badge" id="formatBadge" style="display:none">JSON</span>
+        </div>
+      </div>
+      <textarea id="input" placeholder="Paste JSON, CSV, SQL, logs, or plain text..."></textarea>
+    </div>
+
+    <div class="pane-card">
+      <div class="pane-header">
+        <div class="pane-header-left">
+          <div class="term-dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+          <span class="pane-title">SANITIZED OUTPUT</span>
+        </div>
+        <div class="pane-badges">
+          <span class="pane-badge red" id="changeCount">0</span>
+          <button class="copy-btn" id="copyBtn" onclick="copyOutput()" title="Copy clean text">📋 Copy</button>
+        </div>
+      </div>
+      <div class="output-content" id="output">Click Sanitize to process</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" id="sanitizeBtn" onclick="doSanitize()">🛡️ Sanitize</button>
+    <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+  </div>
+
+  <div class="entities-bar" id="entitiesBar"></div>
+
+  <div class="sample-section">
+    <button class="sample-btn" onclick="sampleJSON()">📄 JSON</button>
+    <button class="sample-btn" onclick="sampleCSV()">📊 CSV</button>
+    <button class="sample-btn" onclick="sampleSQL()">🗄️ SQL</button>
+    <button class="sample-btn" onclick="sampleLog()">📋 Log</button>
+    <button class="sample-btn" onclick="sampleProse()">📝 Text</button>
+    <button class="sample-btn" onclick="sampleGDPR()">🇪🇺 EU/GDPR</button>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot red"></span> Removed</span>
+    <span><span class="dot green"></span> Synthetic</span>
+  </div>
+
+  <footer>
+    <p>🛡️ FORTRESS ZERO — <a href="index.html#apply">Join Waitlist</a> • 100% client-side</p>
+  </footer>
+</div>
+
+<script>
+// ============================================================
+// FORTRESS ZERO — Playground v7
+// Match index.html aesthetic: dark, premium, terminal-style
+// ============================================================
+
+let currentLocale = 'in';
+let currentFormat = 'auto';
+let lastSanitizedInput = '';
+let lastSanitizedResult = null;
+
+// ============================================================
+// PATTERNS BY LOCALE
+// ============================================================
+
+const PATTERNS = {
+  in: {
+    aadhaar: { pattern: /\b(\d{4}[\s\-]?\d{4}[\s\-]?\d{4})\b/g, desc: 'Aadhaar' },
+    pan: { pattern: /\b([A-Z]{3}[PCJHFATBLG][A-Z]\d{4}[A-Z])\b/g, desc: 'PAN' },
+    email: { pattern: /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g, desc: 'Email' },
+    phone: { pattern: /(\+\d{1,3}[\s\-\d]{8,13})/g, desc: 'Phone' },
+    apiKey: { pattern: /\b(sk-[A-Za-z0-9_\-]{10,})\b/g, desc: 'API Key' },
+    jwt: { pattern: /\b(eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\b/g, desc: 'JWT' }
+  },
+  eu: {
+    email: { pattern: /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g, desc: 'Email' },
+    iban: { pattern: /\b([A-Z]{2}\d{2}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{2,4})\b/gi, desc: 'IBAN' },
+    vat: { pattern: /\b([A-Z]{2}[\s]?\d{2}[\s]?[A-Z0-9]{1,9})\b/gi, desc: 'VAT ID' },
+    ip: { pattern: /\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/g, desc: 'IP Address' },
+    phone: { pattern: /(\+\d[\s\-\d]{7,})/g, desc: 'Phone' },
+    passport: { pattern: /\b([A-Z]{1,2}[0-9]{6,9})\b/g, desc: 'Passport' },
+    ssn: { pattern: /\b(\d{3}[\s\-]?\d{2}[\s\-]?\d{4})\b/g, desc: 'SSN' },
+    uuid: { pattern: /\b([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\b/g, desc: 'UUID' },
+    jwt: { pattern: /\b(eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\b/g, desc: 'JWT' },
+    creditcard: { pattern: /\b(\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4})\b/g, desc: 'Credit Card' }
+  },
+  us: {
+    email: { pattern: /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g, desc: 'Email' },
+    ssn: { pattern: /\b(\d{3}[\s\-]?\d{2}[\s\-]?\d{4})\b/g, desc: 'SSN' },
+    ip: { pattern: /\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/g, desc: 'IP Address' },
+    phone: { pattern: /(\+\d[\s\-\d]{7,})/g, desc: 'Phone' },
+    creditcard: { pattern: /\b(\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4})\b/g, desc: 'Credit Card' },
+    uuid: { pattern: /\b([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\b/g, desc: 'UUID' },
+    zip: { pattern: /\b(\d{5}([\-]\d{4})?)\b/g, desc: 'ZIP Code' }
+  }
+};
+
+PATTERNS.univ = Object.assign({}, PATTERNS.in, PATTERNS.eu, PATTERNS.us);
+
+// ============================================================
+// VALIDATORS
+// ============================================================
+
+const V = {
+  d: [[0,1,2,3,4,5,6,7,8,9],[1,2,3,4,0,6,7,8,9,5],[2,3,4,0,1,7,8,9,5,6],[3,4,0,1,2,8,9,5,6,7],[4,0,1,2,3,9,5,6,7,8],[5,9,8,7,6,0,4,3,2,1],[6,5,9,8,7,1,0,4,3,2],[7,6,5,9,8,2,1,0,4,3],[8,7,6,5,9,3,2,1,0,4],[9,8,7,6,5,4,3,2,1,0]],
+  inv: [0,4,3,2,1,5,6,7,8,9],
+  p: [[0,1,2,3,4,5,6,7,8,9],[1,5,7,6,2,8,3,0,9,4],[2,7,6,0,4,9,3,1,8,5],[3,4,0,7,6,5,9,2,1,8],[4,2,8,6,7,0,9,3,5,1],[5,8,3,9,0,4,6,7,2,1],[6,3,9,5,8,1,0,4,7,2],[7,0,1,2,3,4,5,6,8,9],[8,9,2,1,5,7,4,6,0,3],[9,6,5,4,1,2,7,8,3,0]]
+};
+
+function validateAadhaar(digits) {
+  const d = digits.replace(/\D/g, '');
+  if (d.length !== 12) return false;
+  let c = 0;
+  for (let i = 0; i < 12; i++) c = V.d[c][V.p[i % 8][parseInt(d[i])]];
+  return c === 0;
+}
+
+function getVerhoeffCheck(partial) {
+  const d = partial.replace(/\D/g, '');
+  if (d.length !== 11) return 0;
+  let c = 0;
+  for (let i = 0; i < 11; i++) c = V.d[c][V.p[i % 8][parseInt(d[i])]];
+  return V.inv[c];
+}
+
+function validateLuhn(num) {
+  const d = num.replace(/\D/g, '');
+  if (d.length < 13 || d.length > 19) return false;
+  let sum = 0, isEven = false;
+  for (let i = d.length - 1; i >= 0; i--) {
+    let n = parseInt(d[i]);
+    if (isEven) { n *= 2; if (n > 9) n -= 9; }
+    sum += n; isEven = !isEven;
+  }
+  return sum % 10 === 0;
+}
+
+function validateIBAN(iban) {
+  const clean = iban.replace(/\s/g, '').toUpperCase();
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{4,30}$/.test(clean)) return false;
+  const rearranged = clean.slice(4) + clean.slice(0, 4);
+  let numeric = '';
+  for (const c of rearranged) {
+    if (c >= 'A' && c <= 'Z') numeric += (c.charCodeAt(0) - 55).toString();
+    else numeric += c;
+  }
+  let mod = 0;
+  for (const d of numeric) mod = (mod * 10 + parseInt(d)) % 97;
+  return mod === 1;
+}
+
+// ============================================================
+// GENERATORS
+// ============================================================
+
+const POOL = { digits: '0123456789', upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', lower: 'abcdefghijklmnopqrstuvwxyz' };
+
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randChar(pool) { return pool[randInt(0, pool.length - 1)]; }
+function randStr(pool, len) { let s = ''; for (let i = 0; i < len; i++) s += randChar(pool); return s; }
+
+function genAadhaar() {
+  let a = '';
+  for (let i = 0; i < 11; i++) a += randChar(POOL.digits);
+  return `${a.slice(0,4)} ${a.slice(4,8)} ${a.slice(8,11)}${getVerhoeffCheck(a)}`;
+}
+
+function genPAN() {
+  let s = randChar(POOL.upper) + randChar(POOL.upper) + randChar(POOL.upper);
+  s += randChar('PCJHFATBLG');
+  s += randChar(POOL.upper);
+  for (let i = 0; i < 4; i++) s += randChar(POOL.digits);
+  s += randChar(POOL.upper);
+  return s;
+}
+
+function genEmail() {
+  const domains = ['example.com', 'test.org', 'demo.net'];
+  const local = 'tok_' + Array(4).fill().map((_, i) => i % 2 === 0 ? randChar(POOL.lower) : randChar(POOL.digits)).join('');
+  return local + '@' + domains[randInt(0, 2)];
+}
+
+function genIBAN() {
+  const country = String.fromCharCode(65 + randInt(0,25)) + String.fromCharCode(65 + randInt(0,25));
+  const check = String(98 - ((parseInt(country + '00') * 100 + 1000000) % 97)).padStart(2, '0');
+  const bban = randStr(POOL.upper + POOL.digits, 15).toUpperCase();
+  return (country + check + bban).replace(/(.{4})/g, '$1 ').trim();
+}
+
+function genVAT() {
+  const country = String.fromCharCode(65 + randInt(0,25)) + String.fromCharCode(65 + randInt(0,25));
+  return country + randStr(POOL.digits, randInt(5, 10));
+}
+
+function genIP() { return `${randInt(1,255)}.${randInt(0,255)}.${randInt(0,255)}.${randInt(1,255)}`; }
+
+function genPhone() {
+  const prefixes = ['+1', '+44', '+49', '+33', '+39', '+34', '+91'];
+  return prefixes[randInt(0, prefixes.length - 1)] + ' ' + randStr(POOL.digits, 10);
+}
+
+function genPassport() {
+  let s = randChar(POOL.upper);
+  if (Math.random() > 0.5) s += randChar(POOL.upper);
+  return s + randStr(POOL.digits, 7);
+}
+
+function genSSN() { return `${randInt(100,999)}-${randInt(10,99)}-${randInt(1000,9999)}`; }
+
+function genUUID() {
+  return `${randStr('0123456789abcdef', 8)}-${randStr('0123456789abcdef', 4)}-4${randStr('0123456789abcdef', 3)}-${randChar('089ab')}${randStr('0123456789abcdef', 3)}-${randStr('0123456789abcdef', 12)}`;
+}
+
+function genCreditCard() {
+  let num = '4' + randStr(POOL.digits, 14);
+  let sum = 0, isEven = true;
+  for (let i = num.length - 1; i >= 0; i--) {
+    let n = parseInt(num[i]);
+    if (isEven) { n *= 2; if (n > 9) n -= 9; }
+    sum += n; isEven = !isEven;
+  }
+  return num + ((10 - (sum % 10)) % 10);
+}
+
+function genZip() { return randStr(POOL.digits, 5) + (Math.random() > 0.7 ? '-' + randStr(POOL.digits, 4) : ''); }
+
+function genJWT(orig) {
+  const parts = orig.split('.');
+  if (parts.length !== 3) return orig;
+  const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  return parts[0] + '.' + parts[1].split('').map(() => randChar(b64)).join('') + '.' + parts[2].split('').map(() => randChar(b64)).join('');
+}
+
+function generate(entity, original) {
+  switch (entity) {
+    case 'aadhaar': return genAadhaar();
+    case 'pan': return genPAN();
+    case 'email': return genEmail();
+    case 'iban': return genIBAN();
+    case 'vat': return genVAT();
+    case 'ip': return genIP();
+    case 'phone': return genPhone();
+    case 'passport': return genPassport();
+    case 'ssn': return genSSN();
+    case 'uuid': return genUUID();
+    case 'creditcard': return genCreditCard();
+    case 'zip': return genZip();
+    case 'jwt': return genJWT(original);
+    case 'apiKey': return 'sk-' + randStr(POOL.lower + POOL.digits, original.length - 3);
+    default: return `[${entity.toUpperCase()}_REDACTED]`;
+  }
+}
+
+// ============================================================
+// FORMAT DETECTION
+// ============================================================
+
+function detectFormat(text) {
+  const trimmed = text.trim();
+  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+    try { JSON.parse(trimmed); return 'json'; } catch {}
+  }
+  if (/INSERT\s+INTO/i.test(trimmed) && /VALUES/i.test(trimmed)) return 'sql';
+  const lines = trimmed.split('\n').filter(l => l.trim());
+  if (lines.length >= 2) {
+    const firstCount = lines[0].split(',').length;
+    if (lines.slice(1).every(l => l.split(',').length === firstCount)) return 'csv';
+  }
+  if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return 'log';
+  return 'prose';
+}
+
+// ============================================================
+// SANITIZE
+// ============================================================
+
+function sanitize(text) {
+  if (!text || !text.trim()) return { text: '', changes: [], format: 'prose' };
+
+  const patterns = PATTERNS[currentLocale] || PATTERNS.univ;
+  const detectedFormat = detectFormat(text);
+  const formatToUse = currentFormat === 'auto' ? detectedFormat : currentFormat;
+  const changes = [];
+
+  for (const [type, { pattern, desc }] of Object.entries(patterns)) {
+    const re = new RegExp(pattern.source, pattern.flags);
+    let match;
+    while ((match = re.exec(text)) !== null) {
+      const orig = match[1] || match[0];
+
+      if (/localhost|127\.0\.0\.1|:\d{3,5}/.test(orig)) continue;
+
+      if (type === 'aadhaar' && !validateAadhaar(orig)) continue;
+      if (type === 'creditcard' && !validateLuhn(orig)) continue;
+      if (type === 'iban' && !validateIBAN(orig)) continue;
+
+      const synthetic = generate(type, orig);
+      if (synthetic !== orig) {
+        changes.push({
+          type: desc,
+          orig,
+          synthetic,
+          start: match.index,
+          end: match.index + orig.length
+        });
+      }
+    }
+  }
+
+  if (changes.length > 1) {
+    changes.sort((a, b) => b.start - a.start);
+  }
+
+  let result = text;
+  for (const change of changes) {
+    result = result.slice(0, change.start) + change.synthetic + result.slice(change.end);
+  }
+
+  const typesFound = [...new Set(changes.map(c => c.type))];
+
+  return { text: result, changes, format: formatToUse, typesFound };
+}
+
+// ============================================================
+// UI FUNCTIONS
+// ============================================================
+
+const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+function escapeHtml(t) {
+  return t.replace(/[&<>"']/g, c => ESC_MAP[c]);
+}
+
+function buildDiffHtml(original, changes) {
+  const sorted = changes.length > 1 && changes[0].start > changes[1].start
+    ? [...changes].sort((a, b) => a.start - b.start)
+    : changes;
+
+  const parts = [];
+  let lastEnd = 0;
+
+  for (const change of sorted) {
+    if (change.start > lastEnd) {
+      parts.push(escapeHtml(original.slice(lastEnd, change.start)));
+    }
+    parts.push('<span class="diff-removed">', escapeHtml(change.orig), '</span>');
+    parts.push('<span class="diff-added">', escapeHtml(change.synthetic), '</span>');
+    lastEnd = change.end;
+  }
+
+  if (lastEnd < original.length) {
+    parts.push(escapeHtml(original.slice(lastEnd)));
+  }
+
+  return parts.join('');
+}
+
+function updateOutput(originalText, result) {
+  const output = document.getElementById('output');
+  const changeCount = document.getElementById('changeCount');
+  const formatBadge = document.getElementById('formatBadge');
+  const entitiesBar = document.getElementById('entitiesBar');
+
+  lastSanitizedResult = result;
+
+  formatBadge.textContent = result.format.toUpperCase();
+  formatBadge.style.display = 'inline-block';
+  changeCount.textContent = result.changes.length;
+
+  if (!result.changes.length) {
+    output.innerHTML = '<span style="opacity:0.4">No PII detected.</span>';
+    entitiesBar.innerHTML = '<span class="entity-tag">Clean</span>';
+    return;
+  }
+
+  entitiesBar.innerHTML = result.typesFound.map(t => `<span class="entity-tag active">${t}</span>`).join('');
+  output.innerHTML = buildDiffHtml(originalText, result.changes);
+}
+
+function doSanitize() {
+  const input = document.getElementById('input').value;
+  if (!input.trim()) {
+    document.getElementById('output').innerHTML = 'Click Sanitize to process';
+    document.getElementById('changeCount').textContent = '0';
+    document.getElementById('formatBadge').style.display = 'none';
+    document.getElementById('entitiesBar').innerHTML = '';
+    lastSanitizedInput = '';
+    lastSanitizedResult = null;
+    return;
+  }
+
+  if (input === lastSanitizedInput) return;
+  lastSanitizedInput = input;
+
+  const result = sanitize(input);
+  updateOutput(input, result);
+}
+
+function clearAll() {
+  document.getElementById('input').value = '';
+  document.getElementById('output').innerHTML = 'Click Sanitize to process';
+  document.getElementById('changeCount').textContent = '0';
+  document.getElementById('formatBadge').style.display = 'none';
+  document.getElementById('entitiesBar').innerHTML = '';
+  lastSanitizedInput = '';
+  lastSanitizedResult = null;
+}
+
+function setFormat(fmt, skipSanitize = false) {
+  currentFormat = fmt;
+  document.querySelectorAll('.format-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.format === fmt);
+  });
+  if (!skipSanitize) doSanitize();
+}
+
+function setLocale(locale, skipSanitize = false) {
+  currentLocale = locale;
+  if (!skipSanitize) doSanitize();
+}
+
+function copyOutput() {
+  if (!lastSanitizedResult) return;
+
+  const text = lastSanitizedResult.text;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 Copy';
+      btn.classList.remove('copied');
+    }, 1500);
+  }).catch(err => {
+    console.error('Copy failed:', err);
+  });
+}
+
+// ============================================================
+// SAMPLE DATA
+// ============================================================
+
+function sampleJSON() {
+  setFormat('json', true);
+  setLocale('in', true);
+  lastSanitizedInput = '';
+  document.getElementById('input').value = JSON.stringify({
+    user: { name: "Rajesh Kumar", aadhaar: "987610014325", email: "rajesh@techstartup.in", mobile: "+91 9876543210" },
+    transaction: { id: "TXN001", amount: 125000, pan: "ABCPK1234F", api_key: "sk-live-api-key-abcdef1234567890" },
+    metadata: { jwt: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.test_sig" }
+  }, null, 2);
+  doSanitize();
+}
+
+function sampleCSV() {
+  setFormat('csv', true);
+  setLocale('in', true);
+  lastSanitizedInput = '';
+  document.getElementById('input').value = `name,aadhaar,email,pan,mobile
+Rajesh Kumar,987610014325,rajesh@techstartup.in,ABCPK1234F,+91 9876543210
+Priya Sharma,876543210987,priya@fintech.in,BJPSR5678R,+91 9876543211`;
+  doSanitize();
+}
+
+function sampleSQL() {
+  setFormat('sql', true);
+  setLocale('in', true);
+  lastSanitizedInput = '';
+  document.getElementById('input').value = `INSERT INTO customers (name, aadhaar, email, pan) VALUES ('Rajesh Kumar', '987610014325', 'rajesh@techstartup.in', 'ABCPK1234F');
+INSERT INTO transactions (id, amount, api_key) VALUES ('TXN001', 125000, 'sk-live-api-key-abcdef1234567890');`;
+  doSanitize();
+}
+
+function sampleLog() {
+  setFormat('log', true);
+  setLocale('in', true);
+  lastSanitizedInput = '';
+  document.getElementById('input').value = `2024-11-15T10:30:45 ERROR User login: email=rajesh@techstartup.in aadhaar=987610014325
+2024-11-15T10:30:46 WARN API call: ip=192.168.1.100 pan=ABCPK1234F response=500
+2024-11-15T10:30:47 INFO Transaction completed: amount=125000 api_key=sk-live-api-key-abcdef1234567890`;
+  doSanitize();
+}
+
+function sampleProse() {
+  setFormat('prose', true);
+  setLocale('in', true);
+  lastSanitizedInput = '';
+  document.getElementById('input').value = `Customer Details:
+Name: Rajesh Kumar
+Aadhaar: 987610014325
+Email: rajesh@techstartup.in
+PAN: ABCPK1234F
+Phone: +91 9876543210
+API Key: sk-live-api-key-abcdef1234567890
+
+Please process this customer's request.`;
+  doSanitize();
+}
+
+function sampleGDPR() {
+  setFormat('json', true);
+  setLocale('eu', true);
+  lastSanitizedInput = '';
+  document.getElementById('input').value = JSON.stringify({
+    customer: {
+      name: "Hans Mueller",
+      email: "hans.mueller@example.de",
+      iban: "DE89370400440532013000",
+      vatId: "DE123456789",
+      passport: "C1234567",
+      ssn: "240-52-1234",
+      ip: "85.214.132.117"
+    },
+    order: {
+      id: "ORD-DE-001",
+      amount: 99.99,
+      card: "4111111111111111"
+    },
+    metadata: {
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      jwt: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoYW5zLm11ZWxsZXIifQ.signature"
+    }
+  }, null, 2);
+  doSanitize();
+}
+
+// Event listeners
+document.getElementById('sanitizeBtn').addEventListener('click', doSanitize);
+document.getElementById('input').addEventListener('input', function() {
+  if (this.value.length > 10) {
+    clearTimeout(window._sanitizeTimeout);
+    window._sanitizeTimeout = setTimeout(doSanitize, 300);
+  }
+});
+</script>
+</body>
+</html>

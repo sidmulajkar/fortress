@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fortress Zero — Stop AI Data Leaks Before You Paste</title>
+  <style>
+    :root {
+      --bg: #050508;
+      --surface: #101014;
+      --elevated: #1a1a22;
+      --border: #1f1f2d;
+      --border-hover: #2d2d3d;
+      --text: #e8e8ef;
+      --text-muted: #7a7a8d;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-dim: rgba(59,130,246,0.12);
+      --danger: #ef4444;
+      --success: #22c55e;
+      --radius: 12px;
+      --font-mono: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Utilities */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+
+    /* NAV */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: rgba(5,5,8,0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      z-index: 100;
+      transition: border-color 0.3s;
+    }
+    .nav.scrolled { border-color: var(--border); }
+    .nav .container {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 1.5rem;
+    }
+    .logo {
+      font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .logo span { color: var(--accent); }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none; font-size: 0.85rem;
+      margin-left: 1.5rem; transition: color 0.2s; font-weight: 500;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+      padding: 6rem 0 4rem; position: relative; align-items: center; text-align: center;
+    }
+    .hero-bg {
+      position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--accent-dim); border: 1px solid rgba(59,130,246,0.2);
+      color: var(--accent); padding: 0.4rem 1rem; border-radius: 100px;
+      font-size: 0.75rem; font-weight: 600; margin-bottom: 1.5rem;
+      position: relative; z-index: 1;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.08;
+      max-width: 800px; margin: 0 auto 1.2rem; position: relative; z-index: 1;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-muted);
+      max-width: 580px; margin: 0 auto 2rem;
+    }
+    .hero-ctas {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.85rem 1.8rem; border-radius: var(--radius); font-weight: 600;
+      text-decoration: none; transition: all 0.2s; border: none; cursor: pointer; font-size: 0.95rem;
+    }
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 0 25px rgba(59,130,246,0.2);
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn-secondary {
+      background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--text-muted); }
+
+    .scroll-hook {
+      position: relative; display: inline-flex; flex-direction: column; align-items: center;
+      gap: 0.5rem; color: var(--text-muted); font-size: 0.8rem; font-weight: 500;
+      animation: bounce 2s infinite; text-decoration: none;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-8px); }
+      60% { transform: translateY(-4px); }
+    }
+
+    /* THE DUMBBELL */
+    .section {
+      padding: 5rem 0; position: relative;
+    }
+    .section-label {
+      text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem; font-weight: 700;
+      color: var(--accent); margin-bottom: 1rem; display: inline-block;
+    }
+    .section h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 700; line-height: 1.15;
+      margin-bottom: 1rem; max-width: 640px;
+    }
+    .section-lead {
+      color: var(--text-muted); font-size: 1.1rem; max-width: 620px; line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    /* VECTORS */
+    .vector-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;
+    }
+    .vector-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.5rem; transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .vector-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+    .vector-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6); opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+    .vector-card:hover::before { opacity: 1; }
+    .vector-emoji { font-size: 1.6rem; margin-bottom: 0.75rem; display: block; }
+    .vector-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .vector-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* TERMINAL */
+    .term-card {
+      background: #0a0a0e; border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; max-width: 760px; margin: 0 auto;
+    }
+    .term-header {
+      background: var(--surface); padding: 0.7rem 1rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+    .term-title { color: #555; font-size: 0.75rem; margin-left: 0.5rem; font-family: var(--font-mono); }
+    .term-body {
+      padding: 1.5rem; font-family: var(--font-mono); font-size: 0.85rem;
+      line-height: 1.8; min-height: 240px; color: #abb2bf; position: relative;
+    }
+    .term-line { display: block; }
+    .t-prompt { color: var(--success); }
+    .t-cmd { color: #e5c07b; }
+    .t-comment { color: #5c6370; }
+    .t-output { color: #d19a66; }
+    .cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent); animation: blink 1s step-end infinite; vertical-align: middle; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* HOW IT WORKS */
+    .steps { display: flex; flex-direction: column; gap: 2rem; }
+    .step { display: flex; gap: 1.5rem; text-align: left; align-items: flex-start; }
+    .step-num {
+      flex-shrink: 0; width: 48px; height: 48px; display: grid; place-items: center;
+      background: var(--accent-dim); border: 1px solid rgba(59,130,246,0.2);
+      color: var(--accent); font-weight: 700; font-size: 1.1rem; border-radius: 12px;
+    }
+    .step-content h3 { font-size: 1.1rem; margin-bottom: 0.35rem; }
+    .step-content p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+    /* COMPARISON */
+    .comparison { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .comparison th { text-align: left; padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+    .comparison td { padding: 1rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+    .comparison th:first-child, .comparison td:first-child { color: var(--text); font-weight: 500; padding-left: 0; }
+    .check { color: var(--success); font-weight: 700; }
+    .cross { color: var(--danger); opacity: 0.6; }
+
+    /* WAITLIST */
+    .waitlist-section {
+      background: linear-gradient(180deg, var(--elevated) 0%, var(--bg) 100%);
+      border: 1px solid var(--border); border-radius: 24px; padding: 2.5rem; margin: 3rem 0;
+      position: relative; overflow: hidden;
+    }
+    .waitlist-section::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+    }
+    .waitlist-content h2 { text-align: center; font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .waitlist-content > p { text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { text-align: left; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group select {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.8rem 1rem; color: var(--text); font-size: 0.9rem;
+      transition: border-color 0.2s; appearance: none;
+    }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+    .submit-btn {
+      width: 100%; padding: 1rem; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent), #7c3aed); color: white;
+      font-weight: 700; border: none; cursor: pointer; font-size: 1rem; margin-top: 0.5rem;
+      transition: transform 0.2s;
+    }
+    .submit-btn:hover { transform: translateY(-1px); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .trust-pills {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem; justify-content: center;
+    }
+    .trust-pill {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem; border-radius: 100px; font-size: 0.75rem; color: var(--text-muted);
+    }
+
+    .success-state { display: none; text-align: center; padding: 2rem; }
+    .success-state .big { font-size: 3rem; margin-bottom: 1rem; }
+    .success-state h3 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .success-state p { color: var(--text-muted); }
+
+    .fallback-box {
+      margin-top: 1.5rem;
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: left;
+    }
+    .fallback-box p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .fallback-box textarea {
+      width: 100%;
+      height: 160px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      resize: none;
+      margin-bottom: 0.75rem;
+    }
+    .fallback-box button {
+      width: 100%;
+      padding: 0.7rem;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .fallback-box button:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* HONESTY BAR */
+    .honesty-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+    .honesty-bar::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: var(--accent); border-radius: var(--radius) 0 0 var(--radius);
+    }
+    .honesty-bar p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+    .honesty-bar strong { color: var(--text); }
+
+    footer {
+      text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .step { flex-direction: column; gap: 1rem; }
+      .hero { padding-top: 5rem; min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav" id="navbar">
+  <div class="container">
+    <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">🛡️ FORTRESS <span>ZERO</span></a>
+    <div class="nav-links">
+      <a href="#apply">Apply</a>
+      <a href="playground.html">Playground →</a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="badge">Phase 0 — Early Access</div>
+    <h1>There is a hole between your clipboard and AI tools.</h1>
+    <p class="hero-sub">
+      Your team pastes real data into AI tools right now. Fortress Zero intercepts locally — swapping PII for mathematically valid synthetic tokens — and proves to auditors that nothing raw ever left.
+    </p>
+    <div class="hero-ctas">
+      <a href="#apply" class="btn btn-primary">Apply for Early Access →</a>
+      <a href="playground.html" class="btn btn-secondary">Try the Playground</a>
+    </div>
+    <a href="#problem" class="scroll-hook" style="margin-top:2rem;">
+      <span>Understand the leak</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </a>
+  </section>
+
+  <!-- THE DUMBBELL PROBLEM -->
+  <section class="section reveal" id="problem">
+    <div class="section-label">The Problem</div>
+    <h2>The enterprise AI workflow is a dumbbell.</h2>
+    <p class="section-lead">
+      On the left: raw production data, database schemas, customer CSVs, internal wikis. On the right: ChatGPT, Claude, Llama on localhost, HubSpot, v0, CodeGuide. <strong>The middle is empty.</strong>
+    </p>
+    
+    <div class="vector-grid" style="margin-bottom: 2.5rem;">
+      <div class="vector-card">
+        <span class="vector-emoji">☁️</span>
+        <h3>Cloud AI Leakage</h3>
+        <p>A developer pastes a prod log into ChatGPT. Cross-border transfer. DPDP exposure.</p>
+      </div>
+      <div class="vector-card">
+        <span class="vector-emoji">🏠</span>
+        <h3>Local AI Poisoning</h3>
+        <p>A dev pastes raw PII into a corporate Ollama instance. The context window is permanently contaminated.</p>
+      </div>
+      <div class="vector-card">
+        <span class="vector-emoji">👻</span>
+        <h3>Shadow Infrastructure</h3>
+        <p>Marketing uploads a leads CSV to Zapier → HubSpot. The data lives forever in 3rd-party logs.</p>
+      </div>
+      <div class="vector-card">
+        <span class="vector-emoji">📐</span>
+        <h3>Spec-Driven Exposure</h3>
+        <p>A PM pastes a DB schema into v0 to generate a PRD. Real table names, API keys, and identifiers exposed.</p>
+      </div>
+    </div>
+
+    <div class="honesty-bar">
+      <p><strong>Honest frame:</strong> DLP sits on the network and misses localhost. Browser extensions miss desktop apps. Cloud CASBs miss clipboard jumps. We intercept at the endpoint, before the data cares where it is going.</p>
+    </div>
+  </section>
+
+  <!-- PROOF / TERMINAL -->
+  <section class="section reveal" id="proof" style="padding-top:0;">
+    <div class="section-label">See It Work</div>
+    <h2 style="margin-bottom: 1.5rem;">Synthetic, not redacted.</h2>
+    <p class="section-lead">
+      Redaction breaks AI reasoning. Fortress Zero replaces Aadhaar with Verhoeff-valid numbers, PAN with format-preserving tokens, and emails with deterministic aliases. The AI can still reason about structure. You just don't leak the payload.
+    </p>
+
+    <div class="term-card">
+      <div class="term-header">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <span class="term-title">fortress — zsh</span>
+      </div>
+      <div class="term-body" id="termBody">
+        <span class="cursor"></span>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:1.5rem;">
+      <a href="playground.html" class="btn btn-secondary" style="font-size:0.9rem; padding:0.7rem 1.4rem;">Open Interactive Playground →</a>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section reveal" id="how">
+    <div class="section-label">How It Works</div>
+    <h2 style="margin-bottom: 2.5rem;">The habit, not the hack.</h2>
+    
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Copy the leak</h3>
+          <p>Your developer copies a JSON error log, a CSV export, or a terminal stacktrace. It contains real Aadhaar numbers, PANs, emails, or API keys.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3><code style="background:var(--surface); padding:0.15rem 0.4rem; border-radius:6px; font-size:0.9em;">fz clip</code> intercepts</h3>
+          <p>Fortress Zero detects the format (JSON, CSV, Prose, Code, Log), validates entities with Verhoeff and Luhn checks, applies context guards (never touching variable names or localhost), and generates a deterministic synthetic twin.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Paste with proof</h3>
+          <p>Clean data hits the AI tool. A tamper-evident attestation log is written locally. When the auditor asks, you prove raw PII never left the endpoint.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="section reveal" id="defense" style="padding-top:0;">
+    <div class="section-label">Competitive Defense</div>
+    <h2>Why this is not a regex you can clone.</h2>
+    <p class="section-lead">
+      AI will commoditize the sanitization engine. It cannot commoditize the audit habit. But even today, existing tools have structural blind spots.
+    </p>
+
+    <table class="comparison" style="margin-top:1rem;">
+      <thead>
+        <tr>
+          <th style="width:30%;">Capability</th>
+          <th style="width:35%;">Browser Ext / Cloud DLP</th>
+          <th style="width:35%;">Fortress Zero</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Clipboard intercept</td>
+          <td class="cross">❌ Misses desktop apps</td>
+          <td class="check">✓ Yes, any target</td>
+        </tr>
+        <tr>
+          <td>Localhost AI (Ollama)</td>
+          <towards>✓ Works</td>
+          <td class="cross">❌ Network proxy only</td>
+          <td class="check">✓ Zero-trust local</td>
+        </tr>
+        <tr>
+          <td>Format preservation</td>
+          <td class="cross">❌ Redacts / breaks JSON</td>
+          <td class="check">✓ Synthetic tokens</td>
+        </tr>
+        <tr>
+          <td>Attestation log</td>
+          <td class="cross">❌ None</td>
+          <td class="check">✓ Immutable local log</td>
+        </tr>
+        <tr>
+          <td>Zero dependencies</td>
+          <td class="cross">❌ SaaS / Agents</td>
+          <td class="check">✓ Single binary</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="honesty-bar" style="margin-top:2rem;">
+      <p><strong>Honest boundary:</strong> Fortress Zero is a Technical and Organisational Measure (TOM), not a compliance silver bullet. It supports your DPO under DPDP Section 8(5) and aligns with GDPR Arts 25/32, but final legal interpretation rests with your appointed Data Protection Officer.</p>
+    </div>
+  </section>
+
+  <!-- APPLY -->
+  <section class="section reveal" id="apply">
+    <div class="waitlist-section">
+      <div class="waitlist-content" id="formSection">
+        <h2>Apply for the Pilot</h2>
+        <p>3 teams, 3 months, ₹15,000 flat. You get the CLI, the VS Code extension, and early attestation reporting.</p>
+
+        <form id="waitlistForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Work Email *</label>
+              <input type="email" name="email" required placeholder="you@company.com">
+            </div>
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" name="name" required placeholder="Rahul Sharma">
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Role *</label>
+              <select name="role" required>
+                <option value="">Select role...</option>
+                <option value="developer">Developer / Engineer</option>
+                <option value="devops">DevOps / SRE</option>
+                <option value="cto">CTO / VP Engineering</option>
+                <option value="dpo">DPO / Compliance</option>
+                <option value="founder">Founder / CEO</option>
+                <option value="product">Product / Design</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Company *</label>
+              <input type="text" name="company" required placeholder="Acme Pvt Ltd">
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Team Size</label>
+              <select name="teamSize">
+                <option value="">Select...</option>
+                <option value="1-10">1–10</option>
+                <option value="11-50">11–50</option>
+                <option value="51-200">51–200</option>
+                <option value="201+">201+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Primary AI Tool</label>
+              <select name="aiTool">
+                <option value="">Select...</option>
+                <option value="chatgpt">ChatGPT</option>
+                <option value="claude">Claude</option>
+                <option value="copilot">GitHub Copilot</option>
+                <option value="cursor">Cursor</option>
+                <option value="ollama">Local (Ollama)</option>
+                <option value="v0">v0 / Bolt</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Have you or your team leaked real data to an AI tool? *</label>
+              <select name="pain" required>
+                <option value="">Select...</option>
+                <option value="yes-me">Yes, happened to me</option>
+                <option value="yes-team">Yes, happened to my team</option>
+                <option value="worried">No, but I'm worried</option>
+                <option value="no">No / Not sure</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Twitter / X Handle (Optional)</label>
+              <input type="text" name="twitter" placeholder="@username">
+            </div>
+          </div>
+          <button type="submit" class="submit-btn" id="submitBtn">Apply →</button>
+
+          <div class="trust-pills">
+            <span class="trust-pill">🔒 Zero-Server</span>
+            <span class="trust-pill">🧾 DPDP Ready</span>
+            <span class="trust-pill">🇮🇳 Built for India</span>
+            <span class="trust-pill">🎓 Free for Individuals</span>
+          </div>
+        </form>
+      </div>
+
+      <div class="success-state" id="successState">
+        <div class="big">🚀</div>
+        <h3>Almost there.</h3>
+        <p>Your email app should be open. Hit <strong>Send</strong> to lock in your spot.</p>
+        
+        <div class="fallback-box" id="fallbackBox">
+          <p>Didn't open or prefer to send manually? Copy the template below:</p>
+          <textarea readonly id="emailFallback"></textarea>
+          <button type="button" onclick="copyFallback()">Copy to clipboard</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p style="margin-bottom:0.5rem;">🛡️ FORTRESS ZERO — Clipboard-first. Zero dependencies. Open source core.</p>
+    <p style="display:flex; justify-content:center; gap:1.2rem; flex-wrap:wrap; margin-bottom:0.5rem;">
+      <a href="https://x.com/sidmulajkar" target="_blank" rel="noopener">𝕏 / Twitter</a>
+      <span style="color:var(--border);">|</span>
+      <a href="mailto:hi@sidmulajkar.com">Email</a>
+    </p>
+    <p style="font-size:0.75rem; color:var(--text-muted);">DPDP • GDPR • CCPA</p>
+  </footer>
+
+</div>
+
+<script>
+  // --- Sticky Nav ---
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      document.getElementById('navbar').classList.add('scrolled');
+    } else {
+      document.getElementById('navbar').classList.remove('scrolled');
+    }
+  });
+
+  // --- Reveal on Scroll ---
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // --- Terminal Typewriter ---
+  const termLines = [
+    { text: '$ cat production_log.json | grep aadhaar', cls: 't-cmd', delay: 400 },
+    { text: '{"aadhaar": "6421 8903 5714", "pan": "PQRST5678U"}', cls: 't-output', delay: 100 },
+    { text: '$ echo $CLIPBOARD | fz clip --preview', cls: 't-cmd', delay: 500 },
+    { text: '[FORTRESS] 3 items sanitized (0.145ms)', cls: 't-prompt', delay: 300 },
+    { text: '  aadhaar: "XXXX XXXX XXXX4289"', cls: 't-comment', delay: 100 },
+    { text: '  pan: "SAMU4568H"', cls: 't-comment', delay: 100 },
+    { text: '  email: "tok_a1f2@example.com"', cls: 't-comment', delay: 100 },
+    { text: '$ paste → chatgpt.com', cls: 't-cmd', delay: 400 },
+    { text: '🛡️ Zero raw PII in request body.', cls: 't-prompt', delay: 300 }
+  ];
+
+  function runTerminal() {
+    const body = document.getElementById('termBody');
+    body.innerHTML = '<span class="cursor"></span>';
+    let i = 0;
+
+    function next() {
+      if (i >= termLines.length) {
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        body.appendChild(document.createElement('br'));
+        body.appendChild(cursor);
+        return;
+      }
+      const line = termLines[i];
+      const div = document.createElement('span');
+      div.className = 'term-line';
+      if (line.cls === 't-cmd') {
+        div.innerHTML = `<span class="t-prompt">➜ </span><span class="${line.cls}">${line.text}</span>`;
+      } else if (line.cls === 't-comment') {
+        div.innerHTML = `<span class="${line.cls}">${line.text}</span>`;
+      } else {
+        div.innerHTML = `<span class="${line.cls}">${line.text}</span>`;
+      }
+      body.appendChild(div);
+      body.appendChild(document.createElement('br'));
+      i++;
+      setTimeout(next, line.delay);
+    }
+
+    setTimeout(next, 600);
+  }
+
+  // --- Waitlist Form (Mailto) ---
+  const form = document.getElementById('waitlistForm');
+  const YOUR_EMAIL = "hi@sidmulajkar.com"; // CHANGE THIS
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Opening your email app...';
+    btn.disabled = true;
+
+    const data = Object.fromEntries(new FormData(this).entries());
+    const entryId = 'FZ-' + Date.now().toString(36).toUpperCase();
+
+    const subject = `Fortress Zero Pilot — ${data.name} (${data.company})`;
+    const body = `Hi,
+
+I am applying for the Fortress Zero early access pilot.
+
+Entry ID: ${entryId}
+Name: ${data.name}
+Email: ${data.email}
+Role: ${data.role}
+Company: ${data.company}
+Team Size: ${data.teamSize || 'N/A'}
+Primary AI Tool: ${data.aiTool || 'N/A'}
+Leak Experience: ${data.pain || 'N/A'}
+Twitter/X: ${data.twitter || 'N/A'}
+
+[Add your context here — what you are building, how you found us, or why the pain is urgent]
+
+—
+Sent via fortresszero.dev`;
+
+    // Open mail client
+    window.location.href = `mailto:${YOUR_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    // Show success state with fallback
+    document.getElementById('formSection').style.display = 'none';
+    const success = document.getElementById('successState');
+    success.style.display = 'block';
+    success.querySelector('h3').textContent = 'Now hit Send in your email app.';
+
+    document.getElementById('emailFallback').value = `To: ${YOUR_EMAIL}\nSubject: ${subject}\n\n${body}`;
+  });
+
+  function copyFallback() {
+    const el = document.getElementById('emailFallback');
+    el.select();
+    document.execCommand('copy');
+    const btn = el.nextElementSibling;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
+  }
+
+  // Init
+  runTerminal();
+</script>
+
+</body>
+</html>
+  
