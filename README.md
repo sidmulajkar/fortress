@@ -2,9 +2,9 @@
 
 **Stop pasting real customer data into ChatGPT.** Fortress Zero sanitizes Aadhaar, PAN, emails, API keys, and 15+ PII types locally—before they hit your clipboard.
 
-[![Phase 0 Live](https://img.shields.io/badge/Status-Phase%200%20Live-brightgreen)](https://github.com)
-[![Client-Side Only](https://img.shields.io/badge/Data-100%25%20Client%20Side-blue)](https://github.com)
-[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)](https://github.com)
+[![Phase 0 Live](https://img.shields.io/badge/Status-Phase%200%20Live-brightgreen)](https://github.com/sidmulajkar/fortress)
+[![Client-Side Only](https://img.shields.io/badge/Data-100%25%20Client%20Side-blue)](https://github.com/sidmulajkar/fortress)
+[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)](https://github.com/sidmulajkar/fortress)
 
 ---
 
@@ -63,7 +63,7 @@ The clipboard doesn't warn you. Your IDE doesn't stop you. But now Fortress Zero
 
 ## ⚡ Try It Now
 
-**[Live Playground →](https://fortress-zero.pages.dev/playground.html)**
+**[Live Playground →](https://sidmulajkar.com/fortress/playground.html)**
 
 Or open `playground.html` directly in your browser.
 
@@ -156,7 +156,7 @@ Your Data → Fortress Zero (browser) → Sanitized Output → AI Tool
 - **Attestation Log** — `~/.fortress/events.ndjson` for audits
 - **Team Tiers** — ₹1,500/dev/month
 
-**[Join Waitlist →](https://fortress-zero.pages.dev/index.html)**
+**[Join Waitlist →](https://sidmulajkar.com/fortress/index.html)**
 
 ---
 
