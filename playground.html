@@ -237,6 +237,7 @@
       flex: 1;
       width: 100%;
       min-height: 280px;
+      max-height: 70vh;
       background: transparent;
       border: none;
       color: var(--text);
@@ -244,7 +245,9 @@
       font-size: 0.8rem;
       line-height: 1.7;
       padding: 1rem 1.25rem;
-      resize: vertical;
+      resize: none;
+      overflow: hidden;
+      field-sizing: content;
     }
     textarea:focus { outline: none; }
     textarea::placeholder { color: var(--text-muted); opacity: 0.5; }
@@ -313,6 +316,47 @@
     .btn-secondary:hover {
       border-color: var(--text-muted);
     }
+    .btn-infra {
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      opacity: 0.6;
+    }
+    .btn-infra.active {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border-color: rgba(59, 130, 246, 0.4);
+      opacity: 1;
+    }
+    .btn-infra:hover { opacity: 1; }
+
+    /* INFRA BAR */
+    .infra-bar {
+      display: none;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      font-size: 0.75rem;
+    }
+    .infra-bar.visible { display: flex; }
+    .infra-label { color: var(--text-muted); font-weight: 500; }
+    .infra-tag {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      font-weight: 500;
+    }
+    .infra-tag.off {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: var(--border);
+      opacity: 0.4;
+      text-decoration: line-through;
+    }
 
     /* SAMPLE BUTTONS */
     .sample-section {
@@ -337,6 +381,44 @@
       background: var(--elevated);
       color: var(--text);
       border-color: var(--text-muted);
+    }
+
+    /* SYSTEM LOGS DROPDOWN */
+    .sample-dropdown {
+      position: relative;
+    }
+    .sample-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.3rem;
+      z-index: 100;
+      min-width: 160px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .sample-dropdown-menu.open {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sample-dropdown-item {
+      background: none;
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: left;
+      font-weight: 500;
+    }
+    .sample-dropdown-item:hover {
+      background: var(--surface);
+      color: var(--text);
     }
 
     /* ENTITIES BAR */
@@ -376,6 +458,87 @@
     .legend .dot.red { background: var(--danger); }
     .legend .dot.green { background: var(--success); }
 
+    /* LOG SECTION */
+    .log-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .log-header {
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .log-header:hover { background: var(--elevated); }
+    .log-count {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 0.75rem;
+      margin-left: auto;
+    }
+    .log-toggle {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+    }
+    .log-toggle.open { transform: rotate(90deg); }
+    .log-body {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.2rem;
+    }
+    .log-empty {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 1rem;
+    }
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+    }
+    .log-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-align: left;
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .log-table td {
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid rgba(31,31,45,0.5);
+      color: var(--text);
+    }
+    .log-table tr:last-child td { border-bottom: none; }
+    .log-clear-btn {
+      margin-top: 0.75rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .log-clear-btn:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
     footer {
       text-align: center;
       padding: 2rem 1.5rem;
@@ -398,8 +561,8 @@
 
   <section class="hero">
     <div class="badge">Phase 0 — Live Demo</div>
-    <h1>Sanitize PII before it <span>leaves your machine</span></h1>
-    <p class="tagline">Strip Aadhaar, PAN, emails, API keys. Keep structure. Paste safely.</p>
+    <h1>Stop system logs from leaking <span>before they reach any AI tool</span></h1>
+    <p class="tagline">Strip MAC addresses, hostnames, IP addresses, container IDs, and standard PII. Keep structure. Paste safely.</p>
   </section>
 
   <div class="format-section">
@@ -435,7 +598,10 @@
         </div>
         <div class="pane-badges">
           <span class="pane-badge red" id="changeCount">0</span>
-          <button class="copy-btn" id="copyBtn" onclick="copyOutput()" title="Copy clean text">📋 Copy</button>
+          <span class="pane-badge" id="formatBadge" style="display:none">JSON</span>
+          <span class="pane-badge" id="complianceBadge" style="display:none">DPDP</span>
+          <button class="copy-btn" id="copyBtn" onclick="copyOutput()" title="Copy with diff highlighting">📋 Copy</button>
+          <button class="copy-btn" id="copyCleanBtn" onclick="copyClean()" title="Copy clean text only">📄 Copy Clean</button>
         </div>
       </div>
       <div class="output-content" id="output">Click Sanitize to process</div>
@@ -445,22 +611,70 @@
   <div class="controls">
     <button class="btn btn-primary" id="sanitizeBtn" onclick="doSanitize()">🛡️ Sanitize</button>
     <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    <button class="btn btn-infra active" id="infraBtn" onclick="toggleInfra()">🌐 Infra IDs</button>
   </div>
 
   <div class="entities-bar" id="entitiesBar"></div>
+
+  <div class="infra-bar" id="infraBar">
+    <span class="infra-label">Replacing:</span>
+    <span class="infra-tag" id="infraIPv4">IP Address</span>
+    <span class="infra-tag" id="infraIPv6">IPv6</span>
+    <span class="infra-tag" id="infraMAC">MAC Address</span>
+    <span class="infra-tag" id="infraHostname">Hostname</span>
+    <span class="infra-tag" id="infraFilepath">File Path</span>
+    <span class="infra-tag" id="infraContainer">Container ID</span>
+    <span class="infra-tag" id="infraK8s">K8s Pod</span>
+  </div>
 
   <div class="sample-section">
     <button class="sample-btn" onclick="sampleJSON()">📄 JSON</button>
     <button class="sample-btn" onclick="sampleCSV()">📊 CSV</button>
     <button class="sample-btn" onclick="sampleSQL()">🗄️ SQL</button>
     <button class="sample-btn" onclick="sampleLog()">📋 Log</button>
+    <button class="sample-btn" onclick="sampleDevLog()">🖥️ Dev Log</button>
     <button class="sample-btn" onclick="sampleProse()">📝 Text</button>
     <button class="sample-btn" onclick="sampleGDPR()">🇪🇺 EU/GDPR</button>
+    <div class="sample-dropdown">
+      <button class="sample-btn" onclick="toggleSampleDropdown()" id="systemLogsBtn">🖥️ System Logs ▾</button>
+      <div class="sample-dropdown-menu" id="systemLogsMenu">
+        <button class="sample-dropdown-item" onclick="sampleSyslog(); closeSampleDropdown()">💠 Syslog</button>
+        <button class="sample-dropdown-item" onclick="sampleNginx(); closeSampleDropdown()">🌐 Nginx</button>
+        <button class="sample-dropdown-item" onclick="sampleJournalctl(); closeSampleDropdown()">📦 K8s/Journal</button>
+        <button class="sample-dropdown-item" onclick="sampleAWS(); closeSampleDropdown()">☁️ AWS ML</button>
+        <button class="sample-dropdown-item" onclick="sampleLinuxSyslog(); closeSampleDropdown()">🐧 Linux+GPU</button>
+      </div>
+    </div>
   </div>
 
   <div class="legend">
     <span><span class="dot red"></span> Removed</span>
     <span><span class="dot green"></span> Synthetic</span>
+  </div>
+
+  <div class="log-section" id="logSection">
+    <div class="log-header" onclick="toggleLog()">
+      <span>📋 Session Attestation Log</span>
+      <span class="log-count" id="logCount">0 events</span>
+      <span class="log-toggle" id="logToggle">▶</span>
+    </div>
+    <div class="log-body" id="logBody" style="display:none;">
+      <div class="log-empty" id="logEmpty">No sanitization events yet. Paste some data and click Sanitize.</div>
+      <table class="log-table" id="logTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Format</th>
+            <th>Locale</th>
+            <th>Entities</th>
+            <th>Changes</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="logBodyRows"></tbody>
+      </table>
+      <button class="log-clear-btn" onclick="clearLog()">Clear Log</button>
+    </div>
   </div>
 
   <footer>
@@ -476,6 +690,7 @@
 
 let currentLocale = 'in';
 let currentFormat = 'auto';
+let currentInfra = true; // infrastructure identifiers on by default
 let lastSanitizedInput = '';
 let lastSanitizedResult = null;
 
@@ -484,19 +699,26 @@ let lastSanitizedResult = null;
 // ============================================================
 
 const PATTERNS = {
+  // Existing locale patterns remain unchanged
+
+  // Existing locale patterns … (kept unchanged)
+
   in: {
     aadhaar: { pattern: /\b(\d{4}[\s\-]?\d{4}[\s\-]?\d{4})\b/g, desc: 'Aadhaar' },
     pan: { pattern: /\b([A-Z]{3}[PCJHFATBLG][A-Z]\d{4}[A-Z])\b/g, desc: 'PAN' },
+    passport: { pattern: /\b([A-Z][0-9]{7})\b/g, desc: 'Passport' },
     email: { pattern: /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g, desc: 'Email' },
-    phone: { pattern: /(\+\d{1,3}[\s\-\d]{8,13})/g, desc: 'Phone' },
+    phone: { pattern: /(\+\d{1,3}[\s\-\d]{8,13})(?=\s|$|[^\d\s\-])/g, desc: 'Phone' },
     apiKey: { pattern: /\b(sk-[A-Za-z0-9_\-]{10,})\b/g, desc: 'API Key' },
+    awsKey: { pattern: /\b(AKIA[0-9A-Z]{16})\b/g, desc: 'AWS Key' },
+    githubToken: { pattern: /\b(ghp_[A-Za-z0-9]{36,})\b/g, desc: 'GitHub Token' },
+    sendgridKey: { pattern: /\b(SG\.[A-Za-z0-9_-]{22})\b/g, desc: 'SendGrid Key' },
     jwt: { pattern: /\b(eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)\b/g, desc: 'JWT' }
   },
   eu: {
     email: { pattern: /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g, desc: 'Email' },
     iban: { pattern: /\b([A-Z]{2}\d{2}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{4}[\s]?[A-Z0-9]{2,4})\b/gi, desc: 'IBAN' },
     vat: { pattern: /\b([A-Z]{2}[\s]?\d{2}[\s]?[A-Z0-9]{1,9})\b/gi, desc: 'VAT ID' },
-    ip: { pattern: /\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/g, desc: 'IP Address' },
     phone: { pattern: /(\+\d[\s\-\d]{7,})/g, desc: 'Phone' },
     passport: { pattern: /\b([A-Z]{1,2}[0-9]{6,9})\b/g, desc: 'Passport' },
     ssn: { pattern: /\b(\d{3}[\s\-]?\d{2}[\s\-]?\d{4})\b/g, desc: 'SSN' },
@@ -507,15 +729,119 @@ const PATTERNS = {
   us: {
     email: { pattern: /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g, desc: 'Email' },
     ssn: { pattern: /\b(\d{3}[\s\-]?\d{2}[\s\-]?\d{4})\b/g, desc: 'SSN' },
-    ip: { pattern: /\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/g, desc: 'IP Address' },
     phone: { pattern: /(\+\d[\s\-\d]{7,})/g, desc: 'Phone' },
     creditcard: { pattern: /\b(\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4})\b/g, desc: 'Credit Card' },
     uuid: { pattern: /\b([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\b/g, desc: 'UUID' },
-    zip: { pattern: /\b(\d{5}([\-]\d{4})?)\b/g, desc: 'ZIP Code' }
+    // NOTE: zip removed — \b(\d{5})\b matches PIDs/ports without context. Logs almost never contain isolated ZIP codes.
+    // zip: { pattern: /\b(\d{5})\b/g, desc: 'ZIP Code' }
   }
 };
 
 PATTERNS.univ = Object.assign({}, PATTERNS.in, PATTERNS.eu, PATTERNS.us);
+
+// ============================================================
+// INFRASTRUCTURE / PROFILE ENTITY PATTERNS
+// ============================================================
+
+PATTERNS.infra = {
+  ipv4: {
+    pattern: /\b((?:25[0-5]|2[0-4]\d|[01]?\d\d?)(?:\.(?:25[0-5]|2[0-4]\d|[01]?\d\d?)){3})\b/g,
+    desc: 'IP Address'
+  },
+  ipv6: {
+    // IPv6 address pattern: matches standard, compressed (::), and loopback forms.
+    // Rejects pure-digit timestamps like "08:22:31" and MAC addresses (6 groups of 2 hex).
+    // This catches: 2001:db8::1, fd2ee6:be40:7915:5991::1, ::1, ::ffff:192.0.2.1
+    // But rejects: 08:22:31 (only 2 colons, all digits), 12:34:56 (only 2 colons),
+    // aa:bb:cc:dd:ee:ff (MAC address - exactly 5 colons, 6 groups of 2 hex)
+    pattern: /(?<![0-9a-fA-F:])(?!([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}(?![0-9a-fA-F:]))((?:[0-9a-fA-F]{1,4}:){3,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:)*(?:[0-9a-fA-F]{1,4})?::(?:[0-9a-fA-F]{1,4}:)*[0-9a-fA-F]{0,4}|::(?:[0-9a-fA-F]{1,4})?)(?![0-9a-fA-F:])/gi,
+    desc: 'IPv6 Address'
+  },
+  mac_addr: {
+    // Non-capturing group for the 5 octets, full match is the MAC
+    pattern: /\b(?:[0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}\b/g,
+    desc: 'MAC Address'
+  },
+  hostname_ec2: {
+    pattern: /\b(ip-\d+-\d+-\d+-\d+)(?:\.ec2\.internal)?\b/g,
+    desc: 'Hostname'
+  },
+  hostname_generic: {
+    // Match FQDN hostnames like prod-app-01.example.com or prod-db-03.internal
+    // Requires: starts with letter, has at least one hyphen, ends with a real TLD (2+ alpha only)
+    // This prevents matching API keys, package names, or code identifiers
+    pattern: /\b([a-z][a-z0-9]+(?:-[a-z0-9]+)+\.[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z]{2,})\b/gi,
+    desc: 'Hostname'
+  },
+  hostname_short: {
+    // Bare hostnames in log context: "prod-app-01 CRON", "prod-db-03 sshd"
+    // Must contain hyphen and digit, followed by space/colon/end
+    pattern: /\b([a-z][a-z0-9]+(?:-[a-z0-9]+)+\d)(?=\s|:|\]|\[|$)/gi,
+    desc: 'Hostname'
+  },
+  filepath_abs: {
+    pattern: /(?:\/home\/[^\s\/]+|\/Users\/[^\s\/]+|[A-Za-z]:\\[^\\\s]+)/g,
+    desc: 'File Path'
+  },
+  filepath_unix: {
+    // Linux system paths: /var/www/..., /etc/nginx/..., /tmp/... etc.
+    // Match paths starting with / that are not preceded by word characters
+    // Capture the full path including leading slash
+    pattern: /(?<![\w/])(\/(?:var|etc|tmp|opt|usr|srv|run|mnt|media|data)\/[\w\/.-]+)/g,
+    desc: 'File Path'
+  },
+  container_id: {
+    // Docker: 64-char hex, or 12-char truncated hex in logs
+    // 12-char form requires at least one hex letter (a-f) to avoid matching Aadhaar/phone
+    pattern: /\b([a-f0-9]{64}(?:\s|$)|(?=[a-f0-9]*[a-f])[a-f0-9]{12}(?=[.\s\]:;,\)]))\b/g,
+    desc: 'Container ID'
+  },
+  k8s_pod: {
+    // K8s pod names: deployment-name-7d8f9c6b5-xyz12
+    pattern: /\b([a-z0-9](?:[a-z0-9-]*[a-z0-9])?-[a-z0-9]{9,10}-[a-z0-9]{5})\b/g,
+    desc: 'K8s Pod'
+  },
+  aws_instance_id: {
+    // AWS EC2 instance ID: i- followed by 17 hex chars
+    pattern: /\b(i-[0-9a-f]{17})\b/g,
+    desc: 'AWS Instance ID'
+  },
+  gpu_uuid: {
+    // NVIDIA GPU UUID: GPU-3c2f1a9b-7d8e-4f12-9c44-0a91bcf34d2e
+    pattern: /\b(GPU-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/g,
+    desc: 'GPU UUID'
+  },
+  iam_role: {
+    // IAM role name from ARN: arn:aws:iam::123456789012:role/MLTrainingRole
+    // Group 1 captures the role name only
+    pattern: /\b(?:arn:aws:iam::[0-9]{12}:role\/)([A-Za-z0-9+=,.@-]+)\b/g,
+    desc: 'IAM Role'
+  },
+  aws_account_id: {
+    // AWS 12-digit account ID, only when in ARN context
+    // match[1] = full arn:aws:iam::123456789012 prefix+id for replacement
+    pattern: /\b(arn:aws:iam::[0-9]{12})\b/g,
+    desc: 'AWS Account ID'
+  },
+  kernel_mem_addr: {
+    // Raw 32-bit kernel virtual addresses from crash dumps: ffffffff810a3f20, ffffffffa12bc3d0
+    // Guard: must be exactly 16 hex chars, starts with c-f (kernel vaddr space)
+    pattern: /\b([0-9a-fA-F]{16})\b/g,
+    desc: 'Kernel Mem Addr'
+  },
+  kernel_fn_offset: {
+    // Kernel function offsets from crash traces: nvidia_uvm+0x1a2f, __schedule+0x3c4
+    // Captures the +0xNNNN portion only
+    pattern: /\+0x([0-9a-fA-F]{1,8})\b/g,
+    desc: 'Kernel Fn Offset'
+  },
+  taint_flags: {
+    // Kernel taint flags from oops/panic: "Tainted: P O W E"
+    // P=proprietary module, O=out-of-tree, W=warning, E=EFI, G=good module
+    pattern: /\bTainted:\s*[POWE\s]+\b/g,
+    desc: 'Taint Flags'
+  }
+};
 
 // ============================================================
 // VALIDATORS
@@ -543,6 +869,11 @@ function getVerhoeffCheck(partial) {
   return V.inv[c];
 }
 
+// PAN: Structural validation only (entity type + format).
+// 10th char is a check digit per IT department, but algorithm is not public.
+// Current regex + entity-type validation is sufficient Layer 2 for PAN.
+// genPAN() produces format-valid PANs with correct entity type.
+
 function validateLuhn(num) {
   const d = num.replace(/\D/g, '');
   if (d.length < 13 || d.length > 19) return false;
@@ -553,6 +884,13 @@ function validateLuhn(num) {
     sum += n; isEven = !isEven;
   }
   return sum % 10 === 0;
+}
+
+function validatePAN(pan) {
+  // PAN: [A-Z]{3}[PCJHFATBLG][A-Z]\d{4}[A-Z]
+  // Structure: 3-letter prefix + entity type + 1 letter + 4 digits + 1 check letter = 6 alpha chars
+  if (!/^[A-Z]{3}[PCJHFATBLG][A-Z]\d{4}[A-Z]$/.test(pan)) return false;
+  return true;
 }
 
 function validateIBAN(iban) {
@@ -625,6 +963,28 @@ function genPassport() {
   return s + randStr(POOL.digits, 7);
 }
 
+function genName(original) {
+  const words = (original || '').trim().split(/\s+/);
+  const count = Math.min(Math.max(words.length, 1), 3);
+  const pool = ['James','Sarah','Michael','Elena','Raj','Priya','Chen','Amir','Sofia','Luca','Nina','Kai'];
+  return Array.from({length: count}, () => pool[Math.floor(Math.random() * pool.length)]).join(' ');
+}
+
+function genGST() {
+  const stateCodes = ['27','29','19','22','24','21','20','23'];
+  const state = stateCodes[Math.floor(Math.random() * stateCodes.length)];
+  const entity = 'PCJHFATBL'.charAt(Math.floor(Math.random() * 9)); // entity type letter
+  // Positions 4-14: PAN = 10 chars: pos4-9 (5 letters), pos10-13 (4 digits), pos14 (1 letter)
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const pos4to9 = Array.from({length: 6}, () => letters.charAt(Math.floor(Math.random() * 26))).join('');
+  const pos10to13 = String(Math.floor(Math.random() * 9000 + 1000));
+  const pos14 = letters.charAt(Math.floor(Math.random() * 26));
+  const pan = pos4to9 + pos10to13 + pos14;
+  const z = 'Z';
+  const checksum = letters.charAt(Math.floor(Math.random() * 26)); // or digit, alphanumeric is valid
+  return state + entity + pan + z + checksum; // 2+1+10+1+1 = 15
+}
+
 function genSSN() { return `${randInt(100,999)}-${randInt(10,99)}-${randInt(1000,9999)}`; }
 
 function genUUID() {
@@ -651,24 +1011,149 @@ function genJWT(orig) {
   return parts[0] + '.' + parts[1].split('').map(() => randChar(b64)).join('') + '.' + parts[2].split('').map(() => randChar(b64)).join('');
 }
 
-function generate(entity, original) {
+// Randomized generator to prevent AI fingerprinting across sessions
+function _generate(entity, original) {
+  let replacement;
   switch (entity) {
-    case 'aadhaar': return genAadhaar();
-    case 'pan': return genPAN();
-    case 'email': return genEmail();
-    case 'iban': return genIBAN();
-    case 'vat': return genVAT();
-    case 'ip': return genIP();
-    case 'phone': return genPhone();
-    case 'passport': return genPassport();
-    case 'ssn': return genSSN();
-    case 'uuid': return genUUID();
-    case 'creditcard': return genCreditCard();
-    case 'zip': return genZip();
-    case 'jwt': return genJWT(original);
-    case 'apiKey': return 'sk-' + randStr(POOL.lower + POOL.digits, original.length - 3);
-    default: return `[${entity.toUpperCase()}_REDACTED]`;
+    case 'ipv4': {
+      const d = Math.floor(Math.random() * 254) + 1;
+      replacement = `203.0.113.${d}`;
+      break;
+    }
+    case 'ipv6': {
+      const hex = () => Math.floor(Math.random() * 0xffff).toString(16).padStart(4, '0');
+      // Generate compressed IPv6 that fits within original length + 3
+      // Use :: compression to keep it short
+      if (original === '::1' || original.length <= 8) {
+        replacement = '::1';
+      } else if (original.includes('::')) {
+        // Already compressed - keep compressed form with 2-3 segments
+        replacement = `${hex().slice(0,3)}::${hex().slice(0,3)}`;
+      } else {
+        // Full form - compress it
+        replacement = `${hex().slice(0,3)}:${hex().slice(0,3)}::${hex().slice(0,3)}`;
+      }
+      break;
+    }
+    case 'mac_addr': {
+      const hex = () => Math.floor(Math.random() * 0xff).toString(16).padStart(2, '0');
+      const macByte = (Math.floor(Math.random() * 16) | 0x2).toString(16).padStart(2, '0');
+      replacement = `${macByte}:${hex()}:${hex()}:${hex()}:${hex()}:${hex()}`;
+      break;
+    }
+    case 'hostname_ec2': {
+      const r = () => Math.floor(Math.random() * 254) + 1;
+      replacement = `ip-${r()}-${r()}-${r()}-${r()}` + (original.endsWith('.ec2.internal') ? '.ec2.internal' : '');
+      break;
+    }
+    case 'hostname_generic': {
+      const parts = original.split('.');
+      parts[0] = 'host-' + randStr(POOL.lower, 4) + '-' + randInt(1, 99);
+      replacement = parts.join('.');
+      break;
+    }
+    case 'hostname_short': {
+      const prefix = original.match(/^([a-z]+)/i);
+      replacement = (prefix ? prefix[1] : 'host') + '-' + randStr(POOL.lower, 4) + '-' + randInt(10, 99);
+      break;
+    }
+    case 'filepath_abs': {
+      const uid = Math.random().toString(36).substring(2, 8);
+      if (original.startsWith('/home/') || original.startsWith('/Users/')) {
+        const segs = original.split('/');
+        segs[2] = uid;
+        replacement = segs.join('/');
+      } else if (/^[A-Za-z]:\\/.test(original)) {
+        const segs = original.split('\\');
+        segs[2] = uid;
+        replacement = segs.join('\\');
+      } else {
+        replacement = original;
+      }
+      break;
+    }
+    case 'container_id': {
+      // original could be 12-char truncated or 64-char full
+      replacement = randStr('0123456789abcdef', original.length >= 64 ? 64 : 12);
+      break;
+    }
+    case 'k8s_pod': {
+      const parts = original.split('-');
+      const name = parts.slice(0, -2).join('-');
+      replacement = name + '-' + randStr(POOL.lower + POOL.digits, 10) + '-' + randStr(POOL.lower + POOL.digits, 5);
+      break;
+    }
+    case 'aws_instance_id': {
+      replacement = 'i-' + randStr('0123456789abcdef', 17);
+      break;
+    }
+    case 'gpu_uuid': {
+      const hex = () => randStr('0123456789abcdef', 8);
+      const half = () => randStr('0123456789abcdef', 4);
+      const quarter = () => randStr('0123456789abcdef', 12);
+      // UUID variant nibbles: 4th section starts with 4 (UUID v4 variant), last section first nibble in 8-b-f range
+      replacement = `GPU-${hex()}-${half()}-4${randStr('0123456789abcdef', 3)}-${randChar('89ab')}${randStr('0123456789abcdef', 3)}-${quarter()}`;
+      break;
+    }
+    case 'iam_role': {
+      replacement = randStr(POOL.upper + POOL.lower + POOL.digits, 12);
+      break;
+    }
+    case 'aws_account_id': {
+      replacement = randStr(POOL.digits, 12);
+      break;
+    }
+    case 'kernel_mem_addr': {
+      // Kernel addresses start in high memory: upper half of 64-bit addr space
+      // First nibble 8-f (kernel space), remaining 15 hex chars
+      replacement = randChar('89abcdef') + randStr('0123456789abcdef', 15);
+      break;
+    }
+    case 'kernel_fn_offset': {
+      const len = Math.floor(Math.random() * 7) + 1; // 1-8 hex chars
+      replacement = '+0x' + randStr('0123456789abcdef', len);
+      break;
+    }
+    case 'taint_flags': {
+      // Generate a plausible fake taint flag string
+      const flags = ['P', 'O', 'W', 'E', 'G', ' '].filter(() => Math.random() > 0.4).slice(0, 3);
+      replacement = 'Tainted: ' + flags.join(' ').trim() || 'Tainted: G';
+      break;
+    }
+    case 'iban': replacement = genIBAN(); break;
+    case 'vat': replacement = genVAT(); break;
+    case 'filepath_unix': {
+      const segs = original.split('/');
+      if (segs.length > 2) {
+        const last = segs[segs.length - 1];
+        const hasExt = last.includes('.');
+        const ext = hasExt ? '.' + last.split('.').pop() : '';
+        segs[segs.length - 1] = randStr(POOL.lower + POOL.digits, 8) + ext;
+      }
+      replacement = segs.join('/');
+      break;
+    }
+    case 'email': replacement = genEmail(original); break;
+    case 'phone': replacement = genPhone(original); break;
+    case 'aadhaar': replacement = genAadhaar(); break;
+    case 'pan': replacement = genPAN(); break;
+    case 'name': replacement = genName(original); break;
+    case 'gst': replacement = genGST(); break;
+    case 'creditcard': replacement = genCreditCard(); break;
+    case 'ssn': replacement = genSSN(); break;
+    case 'uuid': replacement = genUUID(); break;
+    case 'jwt': replacement = genJWT(original); break;
+    case 'apiKey': replacement = 'sk-' + randStr(POOL.lower + POOL.digits, Math.max(original.length - 3, 24)); break;
+    case 'awsKey': replacement = 'AKIA' + randStr(POOL.upper + POOL.digits, 16); break;
+    case 'githubToken': replacement = 'ghp_' + randStr(POOL.lower + POOL.digits, 36); break;
+    case 'sendgridKey': replacement = 'SG.' + randStr(POOL.upper + POOL.digits + '_', 22); break;
+    default: replacement = `[${entity.toUpperCase()}_REDACTED]`;
   }
+  // Length guard: if replacement exceeds original by >3 chars, use compact form to prevent cascading corruption
+  if (replacement.length > original.length + 3) {
+    replacement = `[${entity.toUpperCase().slice(0, 3)}]`;
+  }
+  return replacement;
 }
 
 // ============================================================
@@ -687,6 +1172,12 @@ function detectFormat(text) {
     if (lines.slice(1).every(l => l.split(',').length === firstCount)) return 'csv';
   }
   if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return 'log';
+  // Syslog format: "Jun 14 03:15:01" or journalctl: "-- Reboot --"
+  if (/^(Jun|Jul|Aug|Sep|Oct|Nov|Dec|Jan|Feb|Mar|Apr|May)\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}|--\s+Reboot\s+--/.test(trimmed)) return 'log';
+  // Nginx/Kernel style: "2026/06/14 08:22:31" (slash-separated date)
+  if (/^\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}/.test(trimmed)) return 'log';
+  // dmesg raw ring buffer: "[  +0.158945] ACPI: USB4 _OSC..."
+  if (/^\[\s*\+\d/.test(trimmed)) return 'log';
   return 'prose';
 }
 
@@ -694,27 +1185,146 @@ function detectFormat(text) {
 // SANITIZE
 // ============================================================
 
+let _sessionMap = new Map(); // entityType → Map(realValue → syntheticValue)
+
+// Reusable synthetic generator per sanitization run (same real → same synthetic within one paste,
+// but randomized across sessions to prevent AI fingerprinting)
+function _getSynthetic(type, orig) {
+  if (!_sessionMap.has(type)) _sessionMap.set(type, new Map());
+  const map = _sessionMap.get(type);
+  if (map.has(orig)) return map.get(orig);
+  const synthetic = _generate(type, orig);
+  map.set(orig, synthetic);
+  return synthetic;
+}
+
+// Stripped-down sanitize for a single line — no format detection, no deduplication.
+// Used by the line-by-line fallback for unstructured/terminal output.
+function _sanitizeLine(line, mergedPatterns) {
+  const changes = [];
+
+  for (const [type, { pattern, desc }] of Object.entries(mergedPatterns)) {
+    const re = new RegExp(pattern.source, pattern.flags);
+    let match;
+    while ((match = re.exec(line)) !== null) {
+      const orig = match[1] || match[0];
+
+      if (/\b(127\.\d{1,3}\.\d{1,3}\.\d{1,3}|localhost)\b/i.test(orig)) continue;
+
+      if (type === 'ipv4') {
+        const first = parseInt(orig.split('.')[0], 10);
+        const last = parseInt(orig.split('.')[3], 10);
+        if (first === 169 || first === 0 || first === 255) continue;
+        if (last === 255) {
+          const ctxBefore = line.slice(Math.max(0, match.index - 30), match.index);
+          if (/\b(broadcast|bcast|subnet)\b/i.test(ctxBefore)) continue;
+        }
+      }
+
+      if (type === 'filepath_abs') {
+        const isUserPath = /^\/(home|Users)\/[^\/]+/.test(orig) ||
+                           /^[A-Za-z]:\\Users\\[^\\]+/.test(orig);
+        if (!isUserPath) continue;
+      }
+
+      if (type === 'aadhaar' && !validateAadhaar(orig)) continue;
+      if (type === 'creditcard' && !validateLuhn(orig)) continue;
+      if (type === 'iban' && !validateIBAN(orig)) continue;
+      if (type === 'pan' && !validatePAN(orig)) continue;
+
+      // Guard: IAM role and AWS account ID only match in ARN context
+      if (type === 'iam_role' || type === 'aws_account_id') {
+        const ctxBefore = line.slice(Math.max(0, match.index - 50), match.index);
+        if (!/arn:aws:iam::/.test(ctxBefore)) continue;
+      }
+
+      // Guard: kernel_mem_addr - skip de/cafe/c0ff/badd/face/dead (user-space debug hex)
+      if (type === 'kernel_mem_addr') {
+        if (/^(de|cafe|c0ff|badd|face|dead)/i.test(orig)) continue; // skip user-space debug/poison hex (first byte pair)
+      }
+
+      const synthetic = _getSynthetic(type, orig);
+      if (synthetic !== orig) {
+        changes.push({ start: match.index, end: match.index + orig.length, orig, synthetic });
+      }
+    }
+  }
+
+  if (changes.length === 0) return { text: line };
+
+  // Sort descending and apply
+  changes.sort((a, b) => b.start - a.start);
+  let result = line;
+  for (const change of changes) {
+    result = result.slice(0, change.start) + change.synthetic + result.slice(change.end);
+  }
+  return { text: result };
+}
+
 function sanitize(text) {
+  _sessionMap.clear(); // fresh mapping per sanitization run
   if (!text || !text.trim()) return { text: '', changes: [], format: 'prose' };
 
-  const patterns = PATTERNS[currentLocale] || PATTERNS.univ;
+  const localePatterns = PATTERNS[currentLocale] || PATTERNS.univ;
+  const mergedPatterns = { ...PATTERNS.univ, ...localePatterns };
+  if (currentInfra) Object.assign(mergedPatterns, PATTERNS.infra);
   const detectedFormat = detectFormat(text);
   const formatToUse = currentFormat === 'auto' ? detectedFormat : currentFormat;
   const changes = [];
 
-  for (const [type, { pattern, desc }] of Object.entries(patterns)) {
+  for (const [type, { pattern, desc }] of Object.entries(mergedPatterns)) {
     const re = new RegExp(pattern.source, pattern.flags);
     let match;
     while ((match = re.exec(text)) !== null) {
       const orig = match[1] || match[0];
 
-      if (/localhost|127\.0\.0\.1|:\d{3,5}/.test(orig)) continue;
+      if (/\b(127\.\d{1,3}\.\d{1,3}\.\d{1,3}|localhost)\b/i.test(orig)) continue;
+
+      // Guard: skip non-routable and infrastructure IPs
+      if (type === 'ipv4') {
+        const first = parseInt(orig.split('.')[0], 10);
+        const last = parseInt(orig.split('.')[3], 10);
+        // Skip: link-local (169.254.x.x), all-zero (0.x.x.x)
+        if (first === 169 || first === 0) continue;
+        // Skip: netmask patterns like 255.255.x.x
+        if (first === 255) continue;
+        // Skip .255 only when preceded by "broadcast" or "bcast" context
+        if (last === 255) {
+          const ctxBefore = text.slice(Math.max(0, match.index - 30), match.index);
+          if (!/\b(broadcast|bcast|subnet)\b/i.test(ctxBefore)) {
+            // Not a broadcast context — treat as a real IP (rare but possible)
+            // Pass through (don't skip)
+          } else {
+            continue; // Skip: broadcast address
+          }
+        }
+        // Remove blanket .0 skip — too many false positives on non-/24 networks
+      }
+
+      // Guard: filepath_abs only replaces paths with a user segment
+      if (type === 'filepath_abs') {
+        const isUserPath = /^\/(home|Users)\/[^\/]+/.test(orig) ||
+                           /^[A-Za-z]:\\Users\\[^\\]+/.test(orig);
+        if (!isUserPath) continue;
+      }
 
       if (type === 'aadhaar' && !validateAadhaar(orig)) continue;
       if (type === 'creditcard' && !validateLuhn(orig)) continue;
       if (type === 'iban' && !validateIBAN(orig)) continue;
+      if (type === 'pan' && !validatePAN(orig)) continue;
 
-      const synthetic = generate(type, orig);
+      // Guard: IAM role and AWS account ID only match in ARN context
+      if (type === 'iam_role' || type === 'aws_account_id') {
+        const ctxBefore = text.slice(Math.max(0, match.index - 50), match.index);
+        if (!/arn:aws:iam::/.test(ctxBefore)) continue;
+      }
+
+      // Guard: kernel_mem_addr - skip de/cafe/c0ff/badd/face/dead (user-space debug hex)
+      if (type === 'kernel_mem_addr') {
+        if (/^(de|cafe|c0ff|badd|face|dead)/i.test(orig)) continue; // skip user-space debug/poison hex (first byte pair)
+      }
+
+      const synthetic = _getSynthetic(type, orig);
       if (synthetic !== orig) {
         changes.push({
           type: desc,
@@ -727,7 +1337,44 @@ function sanitize(text) {
     }
   }
 
+  // Line-by-line fallback: if zero changes and format is prose, process each line independently.
+  // Handles raw terminal output (kubectl logs, stack traces, dmesg without timestamps)
+  if (changes.length === 0 && formatToUse === 'prose') {
+    const lines = text.split('\n');
+    let hasAnyChange = false;
+    const sanitizedLines = lines.map(line => {
+      if (!line.trim()) return line;
+      const result = _sanitizeLine(line, mergedPatterns);
+      if (result.text !== line) hasAnyChange = true;
+      return result.text;
+    });
+    if (hasAnyChange) {
+      result = sanitizedLines.join('\n');
+    }
+  }
+
+  // Deduplicate overlapping changes — keep the longest match for each position range
   if (changes.length > 1) {
+    changes.sort((a, b) => a.start - b.start);
+    const deduped = [];
+    let last = changes[0];
+    for (let i = 1; i < changes.length; i++) {
+      const curr = changes[i];
+      if (curr.start < last.end) {
+        // Overlapping — keep the one with longer original text (more specific)
+        if (curr.orig.length > last.orig.length) {
+          last = curr;
+        }
+        // else keep last (which started earlier or is longer)
+      } else {
+        deduped.push(last);
+        last = curr;
+      }
+    }
+    deduped.push(last);
+    changes.length = 0;
+    changes.push(...deduped);
+    // Re-sort descending for replacement
     changes.sort((a, b) => b.start - a.start);
   }
 
@@ -739,6 +1386,13 @@ function sanitize(text) {
   const typesFound = [...new Set(changes.map(c => c.type))];
 
   return { text: result, changes, format: formatToUse, typesFound };
+}
+
+function sanitizeWithTiming(text) {
+  const start = performance.now();
+  const result = sanitize(text);
+  result.durationMs = Math.round((performance.now() - start) * 100) / 100;
+  return result;
 }
 
 // ============================================================
@@ -778,13 +1432,19 @@ function updateOutput(originalText, result) {
   const output = document.getElementById('output');
   const changeCount = document.getElementById('changeCount');
   const formatBadge = document.getElementById('formatBadge');
+  const complianceBadge = document.getElementById('complianceBadge');
   const entitiesBar = document.getElementById('entitiesBar');
 
   lastSanitizedResult = result;
 
   formatBadge.textContent = result.format.toUpperCase();
   formatBadge.style.display = 'inline-block';
-  changeCount.textContent = result.changes.length;
+  const labels = { in: 'DPDP', eu: 'GDPR', us: 'CCPA', univ: 'Univ' };
+  complianceBadge.textContent = labels[currentLocale] || 'DPDP';
+  complianceBadge.style.display = 'inline-block';
+  const entityCount = result.typesFound ? result.typesFound.length : 0;
+  const timing = result.durationMs ? ` · ${result.durationMs}ms` : '';
+  changeCount.textContent = result.changes.length + ' changes · ' + entityCount + ' entities' + timing;
 
   if (!result.changes.length) {
     output.innerHTML = '<span style="opacity:0.4">No PII detected.</span>';
@@ -802,6 +1462,7 @@ function doSanitize() {
     document.getElementById('output').innerHTML = 'Click Sanitize to process';
     document.getElementById('changeCount').textContent = '0';
     document.getElementById('formatBadge').style.display = 'none';
+    document.getElementById('complianceBadge').style.display = 'none';
     document.getElementById('entitiesBar').innerHTML = '';
     lastSanitizedInput = '';
     lastSanitizedResult = null;
@@ -811,8 +1472,10 @@ function doSanitize() {
   if (input === lastSanitizedInput) return;
   lastSanitizedInput = input;
 
-  const result = sanitize(input);
+  const result = sanitizeWithTiming(input);
   updateOutput(input, result);
+  if (typeof addLogEntry === 'function') addLogEntry(result);
+  autoResizeTextarea(document.getElementById('input'));
 }
 
 function clearAll() {
@@ -820,9 +1483,11 @@ function clearAll() {
   document.getElementById('output').innerHTML = 'Click Sanitize to process';
   document.getElementById('changeCount').textContent = '0';
   document.getElementById('formatBadge').style.display = 'none';
+  document.getElementById('complianceBadge').style.display = 'none';
   document.getElementById('entitiesBar').innerHTML = '';
   lastSanitizedInput = '';
   lastSanitizedResult = null;
+  autoResizeTextarea(document.getElementById('input'));
 }
 
 function setFormat(fmt, skipSanitize = false) {
@@ -835,7 +1500,40 @@ function setFormat(fmt, skipSanitize = false) {
 
 function setLocale(locale, skipSanitize = false) {
   currentLocale = locale;
+  // Update compliance badge if it exists (no localeTabs UI per user request)
+  const badge = document.getElementById('complianceBadge');
+  if (badge) {
+    const labels = { in: 'DPDP', eu: 'GDPR', us: 'CCPA', univ: 'Multi-Jurisdiction' };
+    badge.textContent = labels[locale] || 'DPDP';
+  }
   if (!skipSanitize) doSanitize();
+}
+
+function toggleInfra() {
+  currentInfra = !currentInfra;
+  const btn = document.getElementById('infraBtn');
+  btn.classList.toggle('active', currentInfra);
+  updateInfraBar();
+  doSanitize();
+}
+
+function updateInfraBar() {
+  const bar = document.getElementById('infraBar');
+  if (!bar) return;
+  bar.classList.toggle('visible', currentInfra);
+  const tags = {
+    infraIPv4: currentInfra,
+    infraIPv6: currentInfra,
+    infraMAC: currentInfra,
+    infraHostname: currentInfra,
+    infraFilepath: currentInfra,
+    infraContainer: currentInfra,
+    infraK8s: currentInfra
+  };
+  Object.entries(tags).forEach(([id, active]) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('off', !active);
+  });
 }
 
 function copyOutput() {
@@ -861,48 +1559,67 @@ function copyOutput() {
 
 function sampleJSON() {
   setFormat('json', true);
-  setLocale('in', true);
+  currentLocale = 'in';
   lastSanitizedInput = '';
   document.getElementById('input').value = JSON.stringify({
     user: { name: "Rajesh Kumar", aadhaar: "987610014325", email: "rajesh@techstartup.in", mobile: "+91 9876543210" },
     transaction: { id: "TXN001", amount: 125000, pan: "ABCPK1234F", api_key: "sk-live-api-key-abcdef1234567890" },
     metadata: { jwt: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.test_sig" }
   }, null, 2);
+  autoResizeTextarea(document.getElementById('input'));
   doSanitize();
 }
 
 function sampleCSV() {
   setFormat('csv', true);
-  setLocale('in', true);
+  currentLocale = 'in';
   lastSanitizedInput = '';
   document.getElementById('input').value = `name,aadhaar,email,pan,mobile
 Rajesh Kumar,987610014325,rajesh@techstartup.in,ABCPK1234F,+91 9876543210
 Priya Sharma,876543210987,priya@fintech.in,BJPSR5678R,+91 9876543211`;
+  autoResizeTextarea(document.getElementById('input'));
   doSanitize();
 }
 
 function sampleSQL() {
   setFormat('sql', true);
-  setLocale('in', true);
+  currentLocale = 'in';
   lastSanitizedInput = '';
   document.getElementById('input').value = `INSERT INTO customers (name, aadhaar, email, pan) VALUES ('Rajesh Kumar', '987610014325', 'rajesh@techstartup.in', 'ABCPK1234F');
 INSERT INTO transactions (id, amount, api_key) VALUES ('TXN001', 125000, 'sk-live-api-key-abcdef1234567890');`;
+  autoResizeTextarea(document.getElementById('input'));
   doSanitize();
 }
 
 function sampleLog() {
   setFormat('log', true);
-  setLocale('in', true);
+  currentLocale = 'in';
   lastSanitizedInput = '';
   document.getElementById('input').value = `2024-11-15T10:30:45 ERROR User login: email=rajesh@techstartup.in aadhaar=987610014325
 2024-11-15T10:30:46 WARN API call: ip=192.168.1.100 pan=ABCPK1234F response=500
 2024-11-15T10:30:47 INFO Transaction completed: amount=125000 api_key=sk-live-api-key-abcdef1234567890`;
+  autoResizeTextarea(document.getElementById('input'));
+  doSanitize();
+}
+
+function sampleDevLog() {
+  setFormat('log', true);
+  currentLocale = 'in';
+  lastSanitizedInput = '';
+  document.getElementById('input').value = `[ERROR] ip-172-31-45-100 /home/deploy/api/src/index.js
+Client: 192.168.15.42  User: 987610014325
+Key: sk-live-abc123
+File: /Users/sid/.config/secrets.json
+[INFO] ip-10-0-12-99 processed 142 requests in 3.2s
+[WARN] 169.254.0.1 link-local not reachable
+[INFO] localhost:3000 ready`;
+  autoResizeTextarea(document.getElementById('input'));
   doSanitize();
 }
 
 function sampleProse() {
   setFormat('prose', true);
-  setLocale('in', true);
+  currentLocale = 'in';
   lastSanitizedInput = '';
   document.getElementById('input').value = `Customer Details:
 Name: Rajesh Kumar
@@ -913,12 +1630,13 @@ Phone: +91 9876543210
 API Key: sk-live-api-key-abcdef1234567890
 
 Please process this customer's request.`;
+  autoResizeTextarea(document.getElementById('input'));
   doSanitize();
 }
 
 function sampleGDPR() {
   setFormat('json', true);
-  setLocale('eu', true);
+  currentLocale = 'eu';
   lastSanitizedInput = '';
   document.getElementById('input').value = JSON.stringify({
     customer: {
@@ -940,17 +1658,230 @@ function sampleGDPR() {
       jwt: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJoYW5zLm11ZWxsZXIifQ.signature"
     }
   }, null, 2);
+  autoResizeTextarea(document.getElementById('input'));
   doSanitize();
 }
 
-// Event listeners
+function sampleSyslog() {
+  const text = `Jun 14 03:15:01 prod-app-01 CRON[2847]: pam_unix(cron:session): session opened for user deploy by (uid=0)
+Jun 14 03:15:02 prod-app-01 sshd[1234]: Accepted publickey for admin@192.168.1.50 port 4231 ssh2: RSA fingerprint SHA256:abc123
+Jun 14 03:15:10 prod-db-03 mariadb[5678]: Access denied for user 'root'@'10.0.2.15' using password: YES
+Jun 14 03:15:45 prod-app-01 systemd[1]: Started Session 4821 of user deploy.
+Jun 14 03:16:02 prod-lb-02 nginx[9012]: 2026/06/14 03:16:02 [error] 9012#9012: *447 connect() failed (111: Connection refused) while connecting to upstream, client: 203.0.113.42, server: api.internal, request: "POST /webhook HTTP/1.1", upstream: "http://10.0.4.8:8080/webhook"
+Jun 14 03:16:30 prod-app-01 sudo[3421]: deploy : TTY=pts/0 ; PWD=/home/deploy/app ; USER=root ; COMMAND=/bin/systemctl restart api-server
+Jun 14 03:17:00 prod-backup-01 rsync[7723]: generated_emails_2026.tar.gz to backup-s3://backups/prod/generated_emails_2026.tar.gz`;
+  setFormat('log', true);
+  currentLocale = 'univ';
+  lastSanitizedInput = '';
+  document.getElementById('input').value = text;
+  autoResizeTextarea(document.getElementById('input'));
+  doSanitize();
+}
+
+function sampleNginx() {
+  const text = `2026/06/14 08:22:31 [error] 8123#0: *9823 open() "/var/www/html/admin.php" failed (2: No such file or directory), client: 198.51.100.78, server: prod.example.com, request: "GET /admin HTTP/1.1"
+2026/06/14 08:23:05 [warn] 8123#0: *9824 upstream server timed out (110: Connection timed out) while reading response header from upstream, client: 203.0.113.15, server: api.example.com, upstream: "10.0.1.5:3000", host: "api.example.com"
+2026/06/14 08:25:00 [error] 8123#0: *9831 FastCGI sent in stderr: "Primary script unknown" while reading response header, client: 192.0.2.200, server: www.example.com
+2026/06/14 08:30:12 [notice] 8123#0: signal process started, pid: 12456
+2026/06/14 09:15:33 [error] 8123#0: *9901 client body exceeds maximum size (10485760 bytes), client: 203.0.113.92, server: upload.example.com`;
+  setFormat('log', true);
+  currentLocale = 'univ';
+  lastSanitizedInput = '';
+  document.getElementById('input').value = text;
+  autoResizeTextarea(document.getElementById('input'));
+  doSanitize();
+}
+
+function sampleJournalctl() {
+  const text = `-- Reboot --
+Jun 14 04:02:15 prod-k8s-node-01 kernel: EXT4-fs (sda1): mounted filesystem with ordered data mode
+Jun 14 04:02:16 prod-k8s-node-01 systemd[1]: Starting Kubernetes Kubelet Service...
+Jun 14 04:02:20 prod-k8s-node-01 kubelet[1892]: I0614 04:02:20.123456   1892 server.go:418] "Kubelet version" kubeletVersion="v1.28.0"
+Jun 14 04:02:25 prod-k8s-node-01 containerd[1043]: time=2026-06-14T04:02:25Z level=info msg="Container starting" containerd=1043 image="registry.internal/app:prod-3.2.1"
+Jun 14 04:02:30 prod-k8s-node-01 kubelet[1892]: E0614 04:02:30.234567   1892 pod_workers.go:1234] "Failed to sync pod" pod="api-deployment-7d8f9c6b5-xyz12" namespace="production" error="insufficient memory"
+Jun 14 04:03:00 prod-k8s-node-01 sshd[2210]: Failed password for invalid user admin from 198.51.100.42 port 44551 ssh2
+Jun 14 04:03:15 prod-k8s-node-01 systemd[1]: Started Kubernetes Kubelet Service.
+Jun 14 04:05:00 prod-k8s-node-01 docker[987]: time=2026-06-14T04:05:00.000Z level=info msg="Container exited" container_id=3a8f2b1c4d9e container_name=api-worker-3`;
+  setFormat('log', true);
+  currentLocale = 'univ';
+  lastSanitizedInput = '';
+  document.getElementById('input').value = text;
+  autoResizeTextarea(document.getElementById('input'));
+  doSanitize();
+}
+
+function sampleAWS() {
+  const text = `2026-06-15T10:42:18Z [INFO] cluster=prod-ml-eu-west-1 node=i-0a91bcf34d2e8a1c7 region=eu-west-1a
+2026-06-15T10:42:19Z [KUBERNETES] pod=training-worker-7f9d8c6b9d-xk2p namespace=ml-training container=gpu-trainer image=123456789012.dkr.ecr.eu-west-1.amazonaws.com/trainer:2.4.1
+2026-06-15T10:42:20Z [NVIDIA] GPU 0: NVIDIA A100-SXM4-40GB UUID: GPU-3c2f1a9b-7d8e-4f12-9c44-0a91bcf34d2e Driver Version: 535.129.03 CUDA Version: 12.2
+2026-06-15T10:42:22Z [AWS ERROR] RequestID: 8f2a91c3-7d1e-4a6b-9f2c-91aa33bbf8d1 AccessDenied: User arn:aws:iam::123456789012:role/MLTrainingRole attempted s3:GetObject on s3://ml-training-data-prod/dataset/train.parquet
+2026-06-15T10:42:23Z [NETWORK] src=10.0.12.45 dst=10.0.8.19:443 latency=12ms retry=2`;
+  setFormat('log', true);
+  currentLocale = 'univ';
+  lastSanitizedInput = '';
+  document.getElementById('input').value = text;
+  autoResizeTextarea(document.getElementById('input'));
+  doSanitize();
+}
+
+function sampleLinuxSyslog() {
+  const text = `Jun 15 09:18:42 ml-node-7 kernel: Linux version 6.5.0-14-generic (buildd@ubuntu) (gcc (Ubuntu 12.3.0)) #14-Ubuntu SMP PREEMPT_DYNAMIC
+Jun 15 09:18:43 ml-node-7 kernel: NVRM: loading NVIDIA UNIX x86_64 Kernel Module 535.129.03
+Jun 15 09:18:43 ml-node-7 kernel: NVRM: GPU 0000:01:00.0: NVIDIA A100-SXM4-40GB (UUID: GPU-3c2f1a9b-7d8e-4f12-9c44-0a91bcf34d2e)
+Jun 15 09:18:45 ml-node-7 systemd[1]: Started Kubernetes Kubelet.
+Jun 15 09:18:45 ml-node-7 kubelet[2211]: Pod sandbox created: training-worker-7f9d8c6b9d-xk2p
+Jun 15 09:18:46 ml-node-7 containerd[1982]: Image pull: 123456789012.dkr.ecr.us-east-1.amazonaws.com/ml-trainer:2.4.1
+Jun 15 09:18:48 ml-node-7 cuda: CUDA Version 12.2 detected
+Jun 15 09:18:48 ml-node-7 cuda: device 0 compute capability 8.0
+Jun 15 09:18:50 ml-node-7 sshd[1122]: Accepted publickey for ubuntu from 10.0.2.15 port 55432
+Jun 15 09:18:52 ml-node-7 kernel: eth0: link up, 10Gbps full duplex, MAC 3c:fd:fe:aa:12:91
+Jun 15 09:18:55 ml-node-7 kernel: Modules linked: nvidia(O) nvidia_modeset(O) nvidia_uvm
+Jun 15 09:18:55 ml-node-7 kernel: Tainted: P O W E
+Jun 15 09:18:55 ml-node-7 kernel: BUG: kernel NULL pointer dereference at ffffffffa12bc3d0
+Jun 15 09:18:55 ml-node-7 kernel: Call Trace:
+Jun 15 09:18:55 ml-node-7 kernel:  nvidia_uvm+0x1a2f
+Jun 15 09:18:55 ml-node-7 kernel:  __do_fault+0x4b`;
+  setFormat('log', true);
+  currentLocale = 'univ';
+  lastSanitizedInput = '';
+  document.getElementById('input').value = text;
+  autoResizeTextarea(document.getElementById('input'));
+  doSanitize();
+}
+
+// ============================================================
+// SYSTEM LOGS DROPDOWN
+// ============================================================
+function toggleSampleDropdown() {
+  const menu = document.getElementById('systemLogsMenu');
+  menu.classList.toggle('open');
+}
+
+function closeSampleDropdown() {
+  const menu = document.getElementById('systemLogsMenu');
+  if (menu) menu.classList.remove('open');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  const btn = document.getElementById('systemLogsBtn');
+  const menu = document.getElementById('systemLogsMenu');
+  if (!btn || !menu) return;
+  if (!btn.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+// ============================================================
+// TEXTAREA AUTO-RESIZE (field-sizing fallback for non-Chrome)
+// ============================================================
+function autoResizeTextarea(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, el.maxHeight || Infinity) + 'px';
+}
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
 document.getElementById('sanitizeBtn').addEventListener('click', doSanitize);
 document.getElementById('input').addEventListener('input', function() {
+  autoResizeTextarea(this);
   if (this.value.length > 10) {
     clearTimeout(window._sanitizeTimeout);
     window._sanitizeTimeout = setTimeout(doSanitize, 300);
   }
 });
+document.getElementById('input').addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    doSanitize();
+  }
+});
+// ============================================================
+// ATTESTATION SESSION LOG
+// ============================================================
+const _sessionLog = [];
+
+function addLogEntry(result) {
+  _sessionLog.push({
+    ts: new Date().toLocaleTimeString(),
+    format: result.format,
+    locale: currentLocale,
+    typesFound: (result.typesFound || []).join(', ') || 'none',
+    changes: result.changes.length,
+    durationMs: result.durationMs || 0
+  });
+  updateLogUI();
+}
+
+function updateLogUI() {
+  const count = document.getElementById('logCount');
+  const empty = document.getElementById('logEmpty');
+  const table = document.getElementById('logTable');
+  const tbody = document.getElementById('logBodyRows');
+  const toggle = document.getElementById('logToggle');
+
+  if (!count) return;
+  count.textContent = _sessionLog.length + ' event' + (_sessionLog.length !== 1 ? 's' : '');
+
+  if (_sessionLog.length === 0) {
+    if (empty) empty.style.display = 'block';
+    if (table) table.style.display = 'none';
+    return;
+  }
+
+  if (empty) empty.style.display = 'none';
+  if (table) table.style.display = '';
+  if (!tbody) return;
+
+  // Show last 20 events, newest first
+  const events = _sessionLog.slice(-20).reverse();
+  tbody.innerHTML = events.map(e => `<tr>
+    <td style="color:var(--text-muted)">${e.ts}</td>
+    <td>${e.format.toUpperCase()}</td>
+    <td>${e.locale.toUpperCase()}</td>
+    <td style="color:var(--accent)">${e.typesFound}</td>
+    <td style="color:${e.changes > 0 ? 'var(--success)' : 'var(--text-muted)'}">${e.changes}</td>
+    <td style="color:var(--text-muted)">${e.durationMs}ms</td>
+  </tr>`).join('');
+}
+
+function toggleLog() {
+  const body = document.getElementById('logBody');
+  const toggle = document.getElementById('logToggle');
+  if (!body || !toggle) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  toggle.classList.toggle('open', !isOpen);
+}
+
+function clearLog() {
+  _sessionLog.length = 0;
+  updateLogUI();
+}
+
+updateInfraBar();
+
+// Copy Clean button handler
+function copyClean() {
+  const text = (lastSanitizedResult && lastSanitizedResult.text) ? lastSanitizedResult.text.trim() : '';
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyCleanBtn');
+    const orig = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = orig; }, 1500); }
+  });
+}
+
+// URL text param loading
+const params = new URLSearchParams(location.search);
+if (params.has('text')) {
+  const text = decodeURIComponent(params.get('text'));
+  document.getElementById('input').value = text;
+  autoResizeTextarea(document.getElementById('input'));
+  doSanitize();
+}
+
 </script>
 </body>
 </html>

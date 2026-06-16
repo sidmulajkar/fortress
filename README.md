@@ -20,6 +20,14 @@ Your dev team pastes production data into AI tools **every day**.
 
 The clipboard doesn't warn you. Your IDE doesn't stop you. But now Fortress Zero does.
 
+Beyond PII, production logs carry **system fingerprints** that can uniquely identify infrastructure:
+- AWS EC2 instance IDs, GPU UUIDs, and IAM roles from log metadata
+- Kernel memory addresses and function offsets from crash dumps (`ffffffffa12bc3d0`, `nvidia_uvm+0x1a2f`)
+- K8s pod names, container IDs, and cgroup paths
+- MAC addresses and internal IP addresses
+
+**A single log paste can reveal your entire infrastructure topology to an AI provider.**
+
 ---
 
 ## ✨ Why Fortress Zero?
@@ -58,6 +66,17 @@ The clipboard doesn't warn you. Your IDE doesn't stop you. But now Fortress Zero
 
 **Universal**
 - All of the above combined.
+
+**System Logs / DevOps**
+- ✅ EC2 Instance IDs (`i-0a91bcf34d2e8a1c7`)
+- ✅ GPU UUIDs (`GPU-3c2f1a9b-7d8e-4f12-9c44-0a91bcf34d2e`)
+- ✅ IAM Role names (from ARN context)
+- ✅ AWS Account IDs (from ARN context)
+- ✅ Kernel memory addresses (`ffffffffa12bc3d0`)
+- ✅ Kernel function offsets (`nvidia_uvm+0x1a2f`)
+- ✅ Kernel taint flags (`Tainted: P O W E`)
+- ✅ Container IDs, K8s Pod names, Hostnames
+- ✅ MAC addresses, File paths, UUIDs
 
 ---
 
@@ -144,6 +163,9 @@ Your Data → Fortress Zero (browser) → Sanitized Output → AI Tool
 |-----------|--------|
 | Playground | ✅ Live |
 | Landing Page | ✅ Live |
+| PII Patterns | ✅ 15+ types (India/EU/US) |
+| System Log Patterns | ✅ AWS, GPU, Kernel, K8s, Container |
+| Line-by-line Fallback | ✅ Unstructured log support |
 | Waitlist | 🔄 Open |
 | CLI (Phase 1) | 🔜 Planned |
 
@@ -169,7 +191,10 @@ A: No. Zero network calls. Everything runs in your browser.
 A: Sanitization (pseudonymization) replaces PII with synthetic tokens that can be reversed with the original mapping. Anonymization removes PII permanently. Synthetic ≠ anonymous under GDPR.
 
 **Q: Can I use this for production logs?**
-A: Yes. It's designed for exactly this use case—cleaning logs, exports, and data dumps before AI processing.
+A: Yes. It's designed for exactly this use case—cleaning logs, exports, and data dumps before AI processing. Supports kernel panics, GPU crash traces, AWS/K8s infrastructure logs, nginx access logs, and raw terminal output (line-by-line fallback handles unstructured content).
+
+**Q: What system fingerprints does it catch beyond PII?**
+A: AWS EC2 instance IDs, GPU UUIDs, IAM role ARNs, kernel memory addresses (`0xffffffff*`), kernel function offsets (`+0x1a2f`), taint flags, K8s pod names, container IDs, and MAC addresses. These can uniquely identify infrastructure when combined—see the kernel panic section above.
 
 **Q: Does it preserve data format?**
 A: Yes. Aadhaar stays 12 digits. IBAN passes checksum validation. AI reasoning stays intact.
