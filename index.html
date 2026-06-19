@@ -224,7 +224,7 @@
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, var(--accent), #8b5cf6);
     }
-    .waitlist-content h2 { text-align: center; font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .waitlist-content h2 { text-align: center !important; font-size: 1.6rem; margin-bottom: 0.5rem; max-width: none; }
     .waitlist-content > p { text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem; }
 
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
@@ -339,7 +339,7 @@
   <div class="container">
     <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">🛡️ FORTRESS <span>ZERO</span></a>
     <div class="nav-links">
-      <a href="#apply">Apply</a>
+      <a href="#apply">Waitlist</a>
       <a href="playground.html">Playground →</a>
     </div>
   </div>
@@ -354,7 +354,7 @@
     <h1>Every security team has locked down storage, access, and <span>networks</span>.</h1>
     <p class="tagline">The 2 seconds before an AI prompt — no policy reaches there. That's where Fortress Zero lives.</p>
     <div class="hero-ctas">
-      <a href="#apply" class="btn btn-primary">Apply for Early Access →</a>
+      <a href="#apply" class="btn btn-primary">Join the Waitlist →</a>
       <a href="playground.html" class="btn btn-secondary">Try the Playground</a>
     </div>
     <a href="#problem" class="scroll-hook" style="margin-top:2rem;">
@@ -512,8 +512,8 @@
   <section class="section reveal" id="apply">
     <div class="waitlist-section">
       <div class="waitlist-content" id="formSection">
-        <h2>Apply for the Pilot</h2>
-        <p>3 teams, 3 months, ₹15,000 flat. You get the CLI, the VS Code extension, and early attestation reporting.</p>
+        <h2>Join the Waitlist</h2>
+        <p>The browser playground is live now. CLI, VS Code extension, and attestation reporting — coming in Phase 1.</p>
 
         <form id="waitlistForm">
           <div class="form-grid">
@@ -588,7 +588,7 @@
               <input type="text" name="twitter" placeholder="@username">
             </div>
           </div>
-          <button type="submit" class="submit-btn" id="submitBtn">Apply →</button>
+          <button type="submit" class="submit-btn" id="submitBtn">Join Waitlist →</button>
 
           <div class="trust-pills">
             <span class="trust-pill">🔒 Zero-Server</span>
@@ -620,7 +620,10 @@
       <span style="color:var(--border);">|</span>
       <a href="mailto:hi@sidmulajkar.com">Email</a>
     </p>
-    <p style="font-size:0.75rem; color:var(--text-muted);">DPDP • GDPR • CCPA • Syslog • K8s • Docker</p>
+    <p style="font-size:0.75rem; color:var(--text-muted);">
+      <span style="color:var(--text);"><strong>Compliance:</strong></span> DPDP • GDPR • CCPA &nbsp;·&nbsp;
+      <span style="color:var(--text);"><strong>Sources:</strong></span> System Logs • K8s • Docker • AWS
+    </p>
   </footer>
 
 </div>
@@ -703,10 +706,10 @@
     const data = Object.fromEntries(new FormData(this).entries());
     const entryId = 'FZ-' + Date.now().toString(36).toUpperCase();
 
-    const subject = `Fortress Zero Pilot — ${data.name} (${data.company})`;
+    const subject = `Fortress Zero Waitlist — ${data.name} (${data.company})`;
     const body = `Hi,
 
-I am applying for the Fortress Zero early access pilot.
+I am joining the Fortress Zero waitlist.
 
 Entry ID: ${entryId}
 Name: ${data.name}

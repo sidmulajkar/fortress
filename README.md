@@ -90,7 +90,7 @@ Or open `playground.html` directly in your browser.
 1. Paste your data (JSON, CSV, SQL, logs, plain text)
 2. Click Sanitize
 3. Copy clean output
-4. Paste into any AI tool — safely
+4. Paste into any AI tool — with reduced PII risk
 ```
 
 ---
@@ -218,3 +218,7 @@ Phase 0: **Vanilla HTML/CSS/JS** — Zero dependencies, zero build step.
 <strong>Stop leaking. Start sanitizing. Ship faster.</strong><br>
 🛡️ Fortress Zero — Clipboard-first PII protection.
 </p>
+
+---
+
+**Legal Disclaimer:** Fortress Zero is a Technical and Organisational Measure (TOM) designed to support data protection workflows under DPDP, GDPR, and similar frameworks. It does not constitute legal advice, guarantee compliance, or replace the guidance of your appointed Data Protection Officer (DPO). Synthetic replacement is a form of pseudonymisation, not anonymisation — pseudonymised data remains personal data under DPDP Section 2(t) and GDPR Recital 26. Final legal interpretation of whether your processing is compliant rests with your organisation's DPO and legal counsel.

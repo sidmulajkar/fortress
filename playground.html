@@ -654,7 +654,7 @@
 
   <div class="log-section" id="logSection">
     <div class="log-header" onclick="toggleLog()">
-      <span>📋 Session Attestation Log</span>
+      <span>📋 Session History</span>
       <span class="log-count" id="logCount">0 events</span>
       <span class="log-toggle" id="logToggle">▶</span>
     </div>
@@ -766,11 +766,14 @@ PATTERNS.infra = {
     pattern: /\b(ip-\d+-\d+-\d+-\d+)(?:\.ec2\.internal)?\b/g,
     desc: 'Hostname'
   },
-  hostname_generic: {
-    // Match FQDN hostnames like prod-app-01.example.com or prod-db-03.internal
-    // Requires: starts with letter, has at least one hyphen, ends with a real TLD (2+ alpha only)
-    // This prevents matching API keys, package names, or code identifiers
-    pattern: /\b([a-z][a-z0-9]+(?:-[a-z0-9]+)+\.[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z]{2,})\b/gi,
+  hostname_infra: {
+    // Infrastructure hostnames: requires evidence of being a real servername.
+    // Must have: (a) hyphen in first segment, OR (b) known infra TLD (ec2/cluster/internal/local)
+    // Must be preceded by: start of line, whitespace, quote, apostrophe, or "="
+    // This prevents matching npm package paths, import statements, or git diff headers.
+    // Examples: prod-app-01.example.com, api.prod.svc.cluster.local, host=prod-app-01
+    // Does NOT match: api.prod.example.com (no hyphen in first segment), import-path.from.example
+    pattern: /(?:^|\s|"|'|=)([a-z][a-z0-9-]*\.[a-z0-9-]*(?:\.(?:ec2|cluster|internal|local|com|net|org|io|in|dev|app)))\b/gi,
     desc: 'Hostname'
   },
   hostname_short: {
@@ -1046,7 +1049,7 @@ function _generate(entity, original) {
       replacement = `ip-${r()}-${r()}-${r()}-${r()}` + (original.endsWith('.ec2.internal') ? '.ec2.internal' : '');
       break;
     }
-    case 'hostname_generic': {
+    case 'hostname_infra': {
       const parts = original.split('.');
       parts[0] = 'host-' + randStr(POOL.lower, 4) + '-' + randInt(1, 99);
       replacement = parts.join('.');
@@ -1186,6 +1189,9 @@ function detectFormat(text) {
 // ============================================================
 
 let _sessionMap = new Map(); // entityType → Map(realValue → syntheticValue)
+// NOTE: _sessionMap is ephemeral and memory-only. It is cleared on page reload and never
+// transmitted. It does not constitute a secure pseudonymisation key store. Pseudonymised data
+// remains personal data under DPDP Section 2(t) and GDPR Recital 26.
 
 // Reusable synthetic generator per sanitization run (same real → same synthetic within one paste,
 // but randomized across sessions to prevent AI fingerprinting)
@@ -1798,7 +1804,7 @@ document.getElementById('input').addEventListener('keydown', function(e) {
   }
 });
 // ============================================================
-// ATTESTATION SESSION LOG
+// SESSION HISTORY (browser-only, not a legal attestation log)
 // ============================================================
 const _sessionLog = [];
 
