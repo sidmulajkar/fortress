@@ -704,11 +704,12 @@ const PATTERNS = {
   // Existing locale patterns … (kept unchanged)
 
   in: {
+    name: { pattern: /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\b/g, desc: 'Name' },
     aadhaar: { pattern: /\b(\d{4}[\s\-]?\d{4}[\s\-]?\d{4})\b/g, desc: 'Aadhaar' },
     pan: { pattern: /\b([A-Z]{3}[PCJHFATBLG][A-Z]\d{4}[A-Z])\b/g, desc: 'PAN' },
     passport: { pattern: /\b([A-Z][0-9]{7})\b/g, desc: 'Passport' },
     email: { pattern: /\b([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})\b/g, desc: 'Email' },
-    phone: { pattern: /(\+\d{1,3}[\s\-\d]{8,13})(?=\s|$|[^\d\s\-])/g, desc: 'Phone' },
+    phone: { pattern: /(\+\d{1,3}[\s\-0-9]{8,13})(?=\s|$|[^\d\s\-])/g, desc: 'Phone' },
     apiKey: { pattern: /\b(sk-[A-Za-z0-9_\-]{10,})\b/g, desc: 'API Key' },
     awsKey: { pattern: /\b(AKIA[0-9A-Z]{16})\b/g, desc: 'AWS Key' },
     githubToken: { pattern: /\b(ghp_[A-Za-z0-9]{36,})\b/g, desc: 'GitHub Token' },
@@ -1150,6 +1151,7 @@ function _generate(entity, original) {
     case 'awsKey': replacement = 'AKIA' + randStr(POOL.upper + POOL.digits, 16); break;
     case 'githubToken': replacement = 'ghp_' + randStr(POOL.lower + POOL.digits, 36); break;
     case 'sendgridKey': replacement = 'SG.' + randStr(POOL.upper + POOL.digits + '_', 22); break;
+    case 'passport': replacement = genPassport(); break;
     default: replacement = `[${entity.toUpperCase()}_REDACTED]`;
   }
   // Length guard: if replacement exceeds original by >3 chars, use compact form to prevent cascading corruption
